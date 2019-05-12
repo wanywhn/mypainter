@@ -52,6 +52,7 @@
 #define INTERFACES_H
 
 #include <QtPlugin>
+#include <bezier.h>
 
 QT_BEGIN_NAMESPACE
 class QImage;
@@ -77,7 +78,26 @@ public:
                              const QPoint &newPos) = 0;
     virtual QRect mouseRelease(const QString &brush, QPainter &painter,
                                const QPoint &pos) = 0;
-    virtual QRect drawInternal(QPainterPath &path)=0;
+    QPixmap *mem_pixmap() const;
+    void setMem_pixmap(QPixmap *mem_pixmap);
+
+    wpoint_arraylist **arr_list() const;
+    void setArr_list(wpoint_arraylist **arr_list);
+    wpoints_array **cur_path() const;
+    void setCur_path(wpoints_array **cur_path);
+
+    int w_max() const;
+    void setW_max(int w_max);
+
+    void setW_min(int w_min);
+
+protected:
+
+
+    wpoints_array **m_cur_path{nullptr};
+    wpoint_arraylist **m_arr_list{nullptr};
+    int m_w_max{20};
+    int m_w_min{2};
 };
 //! [0]
 
@@ -108,6 +128,19 @@ public:
 QT_BEGIN_NAMESPACE
 //! [3] //! [4]
 #define BrushInterface_iid "org.qt-project.Qt.Examples.PlugAndPaint.BrushInterface"
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Q_DECLARE_INTERFACE(BrushInterface, BrushInterface_iid)
 //! [3]

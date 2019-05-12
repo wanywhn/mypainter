@@ -22,8 +22,8 @@ private:
 
 	spoint get_last_inserted() {
 		spoint p = { 0, 0 };
-		if (m_cur_path) {
-			p = m_cur_path->last_point;
+        if (m_cur_path&&*m_cur_path) {
+            p = (*m_cur_path)->last_point;
 		} 
 		return p;
 	}
@@ -38,14 +38,12 @@ public:
 
 	QRect mouseRelease(const QString &brush, QPainter &painter, const QPoint &pos) override;
 
-	QRect drawInternal(QPainterPath &ppath) override;
+
 
 private:
-	wpoint_arraylist *m_arr_list = NULL;
-	wpoints_array *m_cur_path = NULL;
+
 	unsigned int m_cur_last_index = 0;
 	float m_w_max, m_w_min; 
-    QPixmap *m_mem_pixmap{nullptr};
 	unsigned int m_cx = 0, m_cy = 0;
 };
 

@@ -18,15 +18,12 @@ include_directories(../plugins/math)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 add_executable(${PROJECT_NAME}
-        ../plugins/math/pen_pencil.cpp
-        ../plugins/math/pen_pencil.h
-        ../plugins/math/bezier.c
-        ../plugins/math/bezier.h
         main.cpp
         mainwindow.cpp
         mainwindow.h
         paintwidget.cpp
         paintwidget.h
+        ../plugins/math/bezier.c
         )
 
 foreach(item ${QTPKG})

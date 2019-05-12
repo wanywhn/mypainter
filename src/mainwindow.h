@@ -50,6 +50,8 @@ private:
     QAction *exitAct;
     QAction *brushWidthAct;
     QAction *brushColorAct;
+    QAction *actUndo;
+    QAction *actRedo;
 };
 
 #endif

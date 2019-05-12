@@ -15,12 +15,9 @@ list(TRANSFORM QTPKG REPLACE "Qt5" "Qt5::")
 
 add_library(${PROJECT_NAME}
         SHARED
-#    basictoolsplugin.cpp
-#    basictoolsplugin.h
         math/pen_pencil.cpp
         math/pen_pencil.h
         math/bezier.c
-        math/bezier.h
     )
 target_include_directories(${PROJECT_NAME} PRIVATE .)
 target_include_directories(${PROJECT_NAME} PRIVATE math)
