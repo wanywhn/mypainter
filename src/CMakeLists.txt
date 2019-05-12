@@ -14,16 +14,17 @@ list(TRANSFORM QTPKG REPLACE "Qt5" "Qt5::")
 
 
 include_directories(.)
-include_directories(math)
+include_directories(../plugins/math)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 add_executable(${PROJECT_NAME}
-        math/pen_pencil.cpp
-        math/pen_pencil.h
-        math/bezier.c
-        math/bezier.h
+        ../plugins/math/pen_pencil.cpp
+        ../plugins/math/pen_pencil.h
+        ../plugins/math/bezier.c
+        ../plugins/math/bezier.h
         main.cpp
-        mainwidnow.cpp
-        mainwidnow.h
+        mainwindow.cpp
+        mainwindow.h
         paintwidget.cpp
         paintwidget.h
         )

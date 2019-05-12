@@ -2,13 +2,17 @@
 #define PAINTWIDGET_H
 
 #include <QWidget>
+#include <interfaces.h>
 
-#include "math/pen_pencil.h"
 class PaintWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit PaintWidget(QWidget *parent = nullptr);
+    void setBrushColor(const QColor &color);
+    void setBrushAlpha(int alpha);
+    void setBrushWidth(int width);
+    void setBrush(BrushInterface *i,const QString &name);
 
 signals:
 
@@ -25,6 +29,26 @@ protected:
 
     // QPaintDevice interface
 public:
+    int brushWidth();
+
+    const QColor &brushColor();
+
+
+private:
+    void setupPainter(QPainter &painter);
+private:
+    int penWidth{1};
+    QColor color{Qt::red};
+    int alpha {1};
+
+    BrushInterface *brushInterface{nullptr};
+    QString brushName;
+    QPixmap *back{nullptr};
+    QVector<QPainterPath >paintPath;
+    QPainterPath oneDraw;
+    int drawPathIndex{0};
+    int drawTmpPathIndex{0};
+
 };
 
 #endif // PAINTWIDGET_H
