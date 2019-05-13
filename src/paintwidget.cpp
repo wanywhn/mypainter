@@ -64,24 +64,20 @@ void PaintWidget::resizeEvent(QResizeEvent *event) {
   QWidget::resizeEvent(event);
 }
 
-int PaintWidget::brushWidth() { return penWidth; }
+int PaintWidget::brushWidth() { return brushInterface->getWidth(); }
 
-const QColor &PaintWidget::brushColor() { return color; }
+const QColor &PaintWidget::brushColor() { return brushInterface->getColor(); }
 
 void PaintWidget::pushUndoStack(UndoCommand *comm) {
   if (comm)
     this->undoStack->push(comm);
 }
-
 void PaintWidget::setBrushColor(const QColor &color) {
-  this->color = color;
   brushInterface->setColor(color);
 }
-
-void PaintWidget::setBrushAlpha(int alpha) {}
+void PaintWidget::setBrushAlpha(int alpha) {brushInterface->setAlpha(alpha);}
 
 void PaintWidget::setBrushWidth(int width) {
-  this->penWidth = width;
   brushInterface->setWidget(width);
 }
 
@@ -91,10 +87,6 @@ void PaintWidget::setBrush(BrushInterface *i, const QString &name) {
 }
 
 
-void PaintWidget::setupPainter(QPainter &painter) {
-  // TODO 从这里改变连接处？
-      painter.setPen(QPen(color, penWidth, Qt::SolidLine));
-}
 
 QUndoStack *PaintWidget::getUndoStack() const
 {

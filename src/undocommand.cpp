@@ -34,18 +34,15 @@ UndoCommand::UndoCommand(const QImage *img, PaintWidget&imgArea, QUndoCommand *p
 
 void UndoCommand::undo()
 {
-//    mImageArea.clearSelection();
     mCurrImage = *(mImageArea.getImage());
     mImageArea.setImage(mPrevImage);
     mImageArea.update();
-//    mImageArea.saveImageChanges();
 }
 
 void UndoCommand::redo()
 {
     mImageArea.setImage(mCurrImage);
     mImageArea.update();
-//    mImageArea.saveImageChanges();
 }
 
 void CommandInterface::makeUndoCommand(PaintWidget &paintWidget)

@@ -8,8 +8,6 @@
 
 class PencilStyle :public QObject,public BrushInterface{
 	Q_OBJECT
-//	Q_PLUGIN_METADATA(IID "org.qt-project.Qt.Examples.PlugAndPaint.BrushInterface" FILE "basictools.json")
-//	Q_INTERFACES(BrushInterface)
 public:
     explicit PencilStyle(QObject *parent=nullptr);
 

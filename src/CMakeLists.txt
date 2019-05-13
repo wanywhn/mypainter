@@ -28,7 +28,6 @@ add_executable(${PROJECT_NAME}
         paintwidget.h
         undocommand.cpp
         undocommand.h
-        commandInterface.h
         interfaces.h
         Eraser.cpp Eraser.h)
 

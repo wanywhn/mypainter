@@ -6,7 +6,6 @@
 #include <QMap>
 #include <undocommand.h>
 
-//FIXME 当CommandInterface有虚函数的时候，QtPlugin系统貌似不能起作用?
 class BrushInterface:public CommandInterface{
 
 public:
@@ -22,15 +21,31 @@ public:
     void setColor(QColor color){this->color= color;}
     void setWidget(int wid){this->width=wid;}
 
+    const QColor &getColor() const {
+        return color;
+    }
+
+    int getAlpha() const {
+        return alpha;
+    }
+
+    void setAlpha(int alpha) {
+        BrushInterface::alpha = alpha;
+    }
+    int getWidth(){return width;}
 public:
-//    CommandInterface anInterface;
 
 protected:
     QColor color;
-    int width;
+
+protected:
+    int width{5};
+    int alpha;
 
 
 };
+
+
 
 class FilterInterface
 {
@@ -42,17 +57,5 @@ public:
                                QWidget *parent) = 0;
 };
 
-/*
-QT_BEGIN_NAMESPACE
-#define BrushInterface_iid "org.qt-project.Qt.Examples.PlugAndPaint.BrushInterface"
-
-Q_DECLARE_INTERFACE(BrushInterface, BrushInterface_iid)
-
-#define FilterInterface_iid "org.qt-project.Qt.Examples.PlugAndPaint.FilterInterface"
-
-Q_DECLARE_INTERFACE(FilterInterface,FilterInterface_iid)
-
-QT_END_NAMESPACE
-*/
 
 #endif

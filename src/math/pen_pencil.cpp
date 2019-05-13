@@ -48,6 +48,11 @@ QRect PencilStyle::drawInternal(QPaintDevice *device) {
     wpoint_arraylist_node *node = m_arr_list->cur;
 
     QPainter painter(device);
+//    painter.setRenderHint(QPainter::RenderHint::Antialiasing,true);
+    painter.setRenderHint(QPainter::RenderHint::HighQualityAntialiasing,true);
+    auto pen=painter.pen();
+    pen.setCapStyle(Qt::PenCapStyle::RoundCap);
+    painter.setPen(pen);
 
     QRegion updateed{0, 0, 0, 0};
 
@@ -69,7 +74,7 @@ QRect PencilStyle::drawInternal(QPaintDevice *device) {
         while (p < last) {
             float fontwid = p->w * m_w_max;
             QPen pen(painter.pen());
-            pen.setWidth(fontwid);
+            pen.setWidthF(fontwid);
             painter.setPen(pen);
 
             fx = p->p.x;
@@ -80,11 +85,24 @@ QRect PencilStyle::drawInternal(QPaintDevice *device) {
             ty = p->p.y;
             tw = p->w;
 
-            painter.drawLine(fx,fy,tx,ty);
+            QLineF line(fx,fy,tx,ty);
+            painter.drawLine(line);
             //FIXME 有跳跃？
             //TODO get rect
-            QPoint tl(fx,fy);
-            QPoint br(tx,ty);
+
+            if(fx>tx){
+                l=tx;r=fx;
+            }else{
+                r=tx;l=fx;
+            }
+            if(fy>ty){
+               t=ty;b=fy;
+            }else{
+                b=ty;t=fy;
+
+            }
+            QPoint tl(l-fontwid,t-fontwid);
+            QPoint br(r+fontwid,b+fontwid);
             updateed = updateed.united(QRect(tl,br));
         };
 
@@ -104,6 +122,8 @@ QRect PencilStyle::drawInternal(QPaintDevice *device) {
 
 QRect PencilStyle::mousePress(const QString &brush, QImage *image, const QPoint &pos) {
     //TODO set line width
+    this->m_w_min=this->width*0.3;
+    this->m_w_max=this->width*1.5;
     this->insert_first(pos.x(), pos.y());
     return drawInternal(image);
 }

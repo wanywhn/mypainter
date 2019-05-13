@@ -48,11 +48,7 @@ public:
     QUndoStack *getUndoStack() const;
 
 private:
-    void setupPainter(QPainter &painter);
 private:
-    int penWidth{1};
-    QColor color{Qt::red};
-    int alpha {1};
 
     BrushInterface *brushInterface{nullptr};
     QString brushName;
@@ -60,7 +56,6 @@ private:
 
     QUndoStack *undoStack;
 
-    QPainter *mPainter;
 };
 
 #endif // PAINTWIDGET_H
