@@ -1,6 +1,7 @@
 #include "interfaces.h"
 #include "mainwindow.h"
 #include "pen_pencil.h"
+#include "Eraser.h"
 
 #include <QTimer>
 
@@ -65,8 +66,13 @@ void MainWindow::createActions()
     connect(brushWidthAct, SIGNAL(triggered()), this, SLOT(brushWidth()));
 
     brushActionGroup = new QActionGroup(this);
+
     actPen=new QAction(tr("Pen"),this);
     brushActionGroup->addAction(actPen);
+
+    actEarser=new QAction(tr("E"),this);
+    brushActionGroup->addAction(actEarser);
+
 
 
     actRedo=mUndoGroup->createRedoAction(this,tr("Redo"));
@@ -88,10 +94,9 @@ void MainWindow::createMenus()
     brushMenu->addAction(brushColorAct);
     brushMenu->addAction(brushWidthAct);
     brushMenu->addSeparator();
+    brushMenu->addAction(actPen);
+    brushMenu->addAction(actEarser);
 
-    shapesMenu = menuBar()->addMenu(tr("&Shapes"));
-
-    filterMenu = menuBar()->addMenu(tr("&Filter"));
 
     menuBar()->addSeparator();
 
@@ -109,6 +114,10 @@ void MainWindow::init_conn()
     connect(actSave,&QAction::triggered,paintWidget,&PaintWidget::saveFile);
     connect(actPen,&QAction::triggered,[this](){
         this->paintWidget->setBrush(new PencilStyle(this),"pen");
+
+    });
+    connect(actEarser,&QAction::triggered,[this](){
+        this->paintWidget->setBrush(new Eraser(this),"E");
 
     });
 }

@@ -31,7 +31,6 @@ private:
 
 public:
 
-	QStringList brushes() const override;
 
 	QRect mousePress(const QString &brush, QImage *image, const QPoint &pos) override;
 
@@ -51,9 +50,6 @@ private:
 
 
 
-// BrushInterface interface
-public:
-    void draw(QPainter *painter) Q_DECL_OVERRIDE;
 
 };
 

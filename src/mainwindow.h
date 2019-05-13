@@ -34,15 +34,12 @@ private:
     void init_conn();
 
     PaintWidget *paintWidget;
-    QDir pluginsDir;
-    QStringList pluginFileNames;
 
     QMenu *fileMenu;
     QMenu *brushMenu;
-    QMenu *shapesMenu;
-    QMenu *filterMenu;
     QActionGroup *brushActionGroup;
     QAction *actPen;
+    QAction *actEarser;
     QAction *exitAct;
     QAction *brushWidthAct;
     QAction *brushColorAct;

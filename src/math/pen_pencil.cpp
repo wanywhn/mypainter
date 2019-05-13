@@ -99,14 +99,8 @@ QRect PencilStyle::drawInternal(QPaintDevice *device) {
 
 }
 
-void PencilStyle::draw(QPainter *painter) {
-}
 
 
-
-QStringList PencilStyle::brushes() const {
-    return QStringList({"Pencil" });
-}
 
 QRect PencilStyle::mousePress(const QString &brush, QImage *image, const QPoint &pos) {
     //TODO set line width

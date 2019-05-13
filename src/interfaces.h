@@ -12,7 +12,6 @@ class BrushInterface:public CommandInterface{
 public:
     virtual ~BrushInterface() {}
 
-    virtual QStringList brushes() const = 0;
     virtual QRect mousePress(const QString &brush, QImage *image,
                              const QPoint &pos) = 0;
     virtual QRect mouseMove(const QString &brush, QImage *image,
@@ -20,7 +19,6 @@ public:
     virtual QRect mouseRelease(const QString &brush, QImage *image,
                                const QPoint &pos) = 0;
     virtual QRect drawInternal(QPaintDevice *path)=0;
-    virtual void draw(QPainter *painter) =0;
     void setColor(QColor color){this->color= color;}
     void setWidget(int wid){this->width=wid;}
 

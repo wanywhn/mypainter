@@ -16,11 +16,8 @@ void PaintWidget::mousePressEvent(QMouseEvent *event) {
 
   if (event->button() == Qt::LeftButton) {
     if (brushInterface) {
-//      setupPainter(painter);
       brushInterface->makeUndoCommand(*this);
-//brushInterface->anInterface.makeUndoCommand(*this);
       auto rect=brushInterface->mousePress(brushName,image, event->pos());
-      //!!warning 这个颜色究竟用什么？
       this->update(rect);
     }
   }

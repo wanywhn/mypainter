@@ -30,7 +30,7 @@ add_executable(${PROJECT_NAME}
         undocommand.h
         commandInterface.h
         interfaces.h
-        )
+        Eraser.cpp Eraser.h)
 
 foreach(item ${QTPKG})
     target_link_libraries(${PROJECT_NAME} PUBLIC ${item})
