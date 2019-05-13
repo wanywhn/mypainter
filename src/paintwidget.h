@@ -1,6 +1,7 @@
 #ifndef PAINTWIDGET_H
 #define PAINTWIDGET_H
 
+#include <QMap>
 #include <QWidget>
 #include <interfaces.h>
 
@@ -45,6 +46,11 @@ private:
     QString brushName;
     QPixmap *back{nullptr};
     QVector<QPainterPath >paintPath;
+    QMap<int,QColor> paintPathColor;
+    QMap<int,int> paintPathType;
+    QStack<CommandInterface *> commandUndo;
+    QStack<CommandInterface *> commandRedo;
+
     QPainterPath oneDraw;
     int drawPathIndex{0};
     int drawTmpPathIndex{0};

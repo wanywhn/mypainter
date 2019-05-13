@@ -47,6 +47,11 @@ private:
 	float m_w_max, m_w_min; 
     QPixmap *m_mem_pixmap{nullptr};
 	unsigned int m_cx = 0, m_cy = 0;
+
+    // CommandInterface interface
+private:
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
 };
 
 #endif //PEN_PELCIL_H

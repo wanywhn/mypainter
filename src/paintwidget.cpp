@@ -21,11 +21,13 @@ void PaintWidget::mousePressEvent(QMouseEvent *event) {
       oneDraw = oneDraw.subtracted(oneDraw);
       auto rect = brushInterface->drawInternal(oneDraw);
       paintPath.push_back(oneDraw);
+//      paintPathColor.insert(paintPath.size(),color);
+//      paintPathType.insert(paintPath.size(),0);
       this->update(rect);
       if (paintPath.size() > 15) {
         painter.begin(back);
         for (auto it = paintPath.cbegin(); it != paintPath.cbegin() + 6; ++it) {
-        painter.drawPath(*it);
+        painter.fillPath((*it),Qt::green);
         }
         painter.end();
         paintPath.erase(paintPath.begin(),paintPath.begin()+6);
@@ -48,6 +50,7 @@ void PaintWidget::mouseReleaseEvent(QMouseEvent *event) {
       //            paintPath.push_back(oneDraw);
       //            paintPath.end()->addPath(oneDraw);
       this->update(rect);
+      commandUndo.push(brushInterface);
     }
   }
 }
@@ -76,11 +79,20 @@ void PaintWidget::paintEvent(QPaintEvent *event) {
   //    painter.drawPath(oneDraw);
   setupPainter(painter);
   //    for (auto i = drawPathIndex-1; i < paintPath.size(); ++i) {
-  for (const auto &i : paintPath) {
+  QPainterPath tmp(QPoint(0,300));
+  tmp.lineTo(600,300);
+  QPainterPathStroker stmp;
+  stmp.setWidth(10);
+  tmp=stmp.createStroke(tmp);
+  painter.fillPath(tmp,Qt::green);
+  for (auto &i : paintPath) {
     //        if(i>=0){
     //            paintPath[i]=paintPath[i].simplified();
     //        painter.drawPath(paintPath[i]);
-    painter.drawPath(i);
+      if(tmp.intersects(i)){
+          i=i.subtracted(tmp);
+      }
+    painter.fillPath(i,Qt::red);
     //        }
   }
   //    drawPathIndex = paintPath.size();

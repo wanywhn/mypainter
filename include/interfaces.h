@@ -63,9 +63,12 @@ class QRect;
 class QString;
 class QStringList;
 QT_END_NAMESPACE
-
+class CommandInterface{
+    virtual void undo()=0;
+    virtual void redo()=0;
+};
 //! [0]
-class BrushInterface
+class BrushInterface:public CommandInterface
 {
 public:
     virtual ~BrushInterface() {}

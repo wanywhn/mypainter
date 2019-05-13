@@ -53,6 +53,7 @@ QRect PencilStyle::drawInternal(QPainterPath &ppath) {
 
     QPainterPath painterPath;
     QPainterPathStroker stroker;
+    stroker.setCapStyle(Qt::RoundCap);
     int l, t, r, b;
     float fx, fy, tx, ty, fw, tw;
     wpoints_array *path = NULL;
@@ -81,35 +82,20 @@ QRect PencilStyle::drawInternal(QPainterPath &ppath) {
             ty = p->p.y;
             tw = p->w;
 
+            QPainterPath tmp(QPointF(fx,fy));
             //FIXME 有跳跃？
-            static QLineF line;
-            line.setLine(fx, fy, tx, ty);
-            QPainterPath tmp(QPointF(fx, fy));
-            tmp.lineTo(tx, ty);
+            tmp.lineTo(tx,ty);
 //            painterPath.connectPath(stroker.createStroke(tmp));
-            painterPath.addPath(stroker.createStroke(tmp));
-            if (fx < tx) {
-                l = fx;
-                r = tx;
-            } else {
-                r = fx;
-                l = tx;
-            }
-
-            if (fy < ty) {
-                t = fy;
-                b = ty;
-            } else {
-                b = fy;
-                t = ty;
-            }
-            updateed = updateed.united(tmp.boundingRect().toRect());
+            painterPath=painterPath.united(stroker.createStroke(tmp));
+//            painterPath.addPath(stroker.createStroke(tmp));
+            updateed = updateed.united(painterPath.boundingRect().toRect());
         };
 
         node = node->n;
         m_cur_last_index = 0;
     };
-    ppath.addPath(painterPath);
+    ppath=ppath.united(painterPath);
+//    ppath.addPath(painterPath);
 
     m_arr_list->cur = m_arr_list->end;
 
@@ -140,5 +126,7 @@ QRect PencilStyle::mouseRelease(const QString &brush, QPainter &painter, const Q
 
 PencilStyle::PencilStyle(QObject *parent) : QObject(parent) {
     m_arr_list = z_new_fpoint_arraylist();
+    this->m_w_max=10;
+    this->m_w_min=1;
 }
 
