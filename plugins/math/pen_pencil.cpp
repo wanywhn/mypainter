@@ -61,6 +61,16 @@ QRect PencilStyle::mouseRelease(const QString &brush, QPainter &painter, const Q
     return QRect();
 }
 
+void PencilStyle::undo()
+{
+
+}
+
+void PencilStyle::redo()
+{
+
+}
+
 PencilStyle::PencilStyle(QObject *parent) : QObject(parent) {
     m_w_max=15;
     m_w_min=2;

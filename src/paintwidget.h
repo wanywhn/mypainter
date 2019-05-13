@@ -53,6 +53,8 @@ private:
     QPixmap *back{nullptr};
 //    QVector<QPainterPath >paintPath;
     QStack<wpoint_arraylist_node *> stackUndo;
+    QStack<CommandInterface *> commandUndo;
+    QStack<CommandInterface *> commandRedo;
     int drawPathIndex{0};
     int drawTmpPathIndex{0};
 

@@ -45,6 +45,11 @@ private:
 	unsigned int m_cur_last_index = 0;
 	float m_w_max, m_w_min; 
 	unsigned int m_cx = 0, m_cy = 0;
+
+    // CommandInterface interface
+public:
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
 };
 
 #endif //PEN_PELCIL_H

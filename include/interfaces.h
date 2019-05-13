@@ -65,8 +65,13 @@ class QString;
 class QStringList;
 QT_END_NAMESPACE
 
-//! [0]
-class BrushInterface
+class CommandInterface{
+public:
+    virtual void undo()=0;
+    virtual void redo()=0;
+
+};
+class BrushInterface:public CommandInterface
 {
 public:
     virtual ~BrushInterface() {}
@@ -98,10 +103,9 @@ protected:
     wpoint_arraylist **m_arr_list{nullptr};
     int m_w_max{20};
     int m_w_min{2};
-};
-//! [0]
 
-//! [1]
+};
+
 class ShapeInterface
 {
 public:
@@ -111,9 +115,7 @@ public:
     virtual QPainterPath generateShape(const QString &shape,
                                        QWidget *parent) = 0;
 };
-//! [1]
 
-//! [2]
 class FilterInterface
 {
 public:
@@ -123,7 +125,6 @@ public:
     virtual QImage filterImage(const QString &filter, const QImage &image,
                                QWidget *parent) = 0;
 };
-//! [2]
 
 QT_BEGIN_NAMESPACE
 //! [3] //! [4]

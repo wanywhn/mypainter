@@ -34,6 +34,7 @@ void PaintWidget::mouseReleaseEvent(QMouseEvent *event) {
       brushInterface->mouseRelease(brushName, painter, event->pos());
       auto rect = this->drawInternal();
       this->update(rect);
+      commandRedo.push(brushInterface);
     }
   }
 }
@@ -84,9 +85,14 @@ void PaintWidget::setBrush(BrushInterface *i, const QString &name) {
 }
 
 void PaintWidget::redo() {
-  if (stackUndo.empty()) {
+  if (commandRedo.empty()) {
     return;
   }
+  auto item=commandRedo.pop();
+  commandUndo.push(item);
+  item->redo();
+
+
   if (m_arr_list->first == nullptr) {
     m_arr_list->end = stackUndo.pop();
     m_arr_list->cur = m_arr_list->end;
@@ -122,6 +128,14 @@ QRect PaintWidget::getChangeRect(wpoint_arraylist_node *item) {
 }
 
 void PaintWidget::undo() {
+    if(commandUndo.empty()){
+        return ;
+    }
+        auto item=commandUndo.pop();
+        commandRedo.push(item);
+        item->undo();
+
+
   if (!m_arr_list->end || !m_arr_list->first) {
     return;
   }
@@ -138,12 +152,12 @@ void PaintWidget::undo() {
     it->n = nullptr;
     m_arr_list->end = it;
   }
-  auto item = stackUndo.top();
-  m_arr_list->cur = m_arr_list->end;
-  this->drawInternal(item);
-  this->drawInternal();
+//  auto item = stackUndo.top();
+//  m_arr_list->cur = m_arr_list->end;
+//  this->drawInternal(item);
+//  this->drawInternal();
 //  auto rect = getChangeRect(item);
-  this->update();
+//  this->update();
 }
 
 void PaintWidget::setupPainter(QPainter &painter) {
@@ -192,16 +206,22 @@ QRect PaintWidget::drawInternal(wpoint_arraylist_node *rev) {
       tw = p->w;
 
       // FIXME 有跳跃？
+      QPainterPath painterpath(QPointF(fx,fy));
       static QLineF line;
       line.setLine(fx, fy, tx, ty);
+      painterpath.lineTo(tx,ty);
       //            QPainterPath tmp(QPointF(fx, fy));
       //            tmp.lineTo(tx, ty);
       if(rev){
       pen.setColor(Qt::white);
       }
+      pen.setBrush(Qt::red);
       painter.setPen(pen);
-      painter.drawLine(line);
-      //            painterPath.connectPath(stroker.createStroke(tmp));
+//      painter.drawLine(line);
+      QPainterPathStroker ps;
+      ps.setWidth(fontwid);
+      painter.drawPath(ps.createStroke(painterpath));
+      //            painterPath.(stroker.createStroke(tmp));
       //            tmp=tmp.united(stroker.createStroke(tmp));
       //    painterPath.addPath(stroker.createStroke(tmp));
       //            painterPath.addPath(tmp);
