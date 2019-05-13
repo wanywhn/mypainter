@@ -8,7 +8,7 @@ QStringList Earse::brushes() const {
     return QStringList("Earser");
 }
 
-QRect Earse::mousePress(const QString &brush, QPainter &painter, const QPoint &pos) {
+QRect Earse::mousePress(const QString &brush, QImage *image, const QPoint &pos) {
     QPainterPath tmp;
     earserPath.swap(tmp);
     earserPath.moveTo(pos);
@@ -16,23 +16,23 @@ QRect Earse::mousePress(const QString &brush, QPainter &painter, const QPoint &p
     return QRect();
 }
 
-QRect Earse::mouseMove(const QString &brush, QPainter &painter, const QPoint &newPos) {
+QRect Earse::mouseMove(const QString &brush, QImage *image, const QPoint &newPos) {
     earserPath.lineTo(newPos);
     return QRect();
 }
 
-QRect Earse::mouseRelease(const QString &brush, QPainter &painter, const QPoint &pos) {
+QRect Earse::mouseRelease(const QString &brush, QImage *image, const QPoint &pos) {
     earserPath.lineTo(pos);
     return QRect();
 }
 
-QRect Earse::drawInternal(QPainterPath *path) {
+QRect Earse::drawInternal(QPaintDevice *path) {
     stroker.setWidth(width);
     *path=path->united(stroker.createStroke(earserPath));
     return path->boundingRect().toRect();
 }
 
-void Earse::draw(QPainter *painter, DrawPathParameter drawPathObj) {
+void Earse::draw(QPainter *painter) {
 
     for (auto item:*drawPathObj.paintPath) {
         if (drawPathObj.paintPathType->value(item) == 0) {

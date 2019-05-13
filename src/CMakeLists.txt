@@ -14,19 +14,22 @@ list(TRANSFORM QTPKG REPLACE "Qt5" "Qt5::")
 
 
 include_directories(.)
-include_directories(../plugins/math)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
+include_directories(math)
 
 add_executable(${PROJECT_NAME}
-        ../plugins/math/pen_pencil.cpp
-        ../plugins/math/pen_pencil.h
-        ../plugins/math/bezier.c
-        ../plugins/math/bezier.h
+        math/pen_pencil.cpp
+        math/pen_pencil.h
+        math/bezier.c
+        math/bezier.h
         main.cpp
         mainwindow.cpp
         mainwindow.h
         paintwidget.cpp
         paintwidget.h
+        undocommand.cpp
+        undocommand.h
+        commandInterface.h
+        interfaces.h
         )
 
 foreach(item ${QTPKG})
@@ -34,5 +37,4 @@ foreach(item ${QTPKG})
 endforeach()
 set_target_properties(${PROJECT_NAME} PROPERTIES AUTOMOC TRUE)
 
-add_dependencies(${PROJECT_NAME} paintertools)
 #add_dependencies(${PROJECT_NAME} earser)

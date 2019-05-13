@@ -29,17 +29,16 @@ class Earse:public QObject ,public BrushInterface{
 public:
     QStringList brushes() const override;
 
-    QRect mousePress(const QString &brush, QPainter &painter, const QPoint &pos) override;
+    QRect mousePress(const QString &brush, QImage *image, const QPoint &pos) override;
 
-    QRect mouseMove(const QString &brush, QPainter &painter, const QPoint &newPos) override;
+    QRect mouseMove(const QString &brush, QImage *image, const QPoint &newPos) override;
 
-    QRect mouseRelease(const QString &brush, QPainter &painter, const QPoint &pos) override;
+    QRect mouseRelease(const QString &brush, QImage *image, const QPoint &pos) override;
 
-    QRect drawInternal(QPainterPath *path) override;
+    QRect drawInternal(QPaintDevice *path) override;
 
-    void draw(QPainter *painter, DrawPathParameter drawPathObj) override;
+    void draw(QPainter *painter) override;
 
-    CommandInterface *createCommand(DrawPathParameter parameter) override;
 
 private:
     QPainterPath earserPath;

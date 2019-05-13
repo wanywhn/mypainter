@@ -1,26 +1,28 @@
 #ifndef PAINTWIDGET_H
 #define PAINTWIDGET_H
 
+
 #include <QMap>
 #include <QStack>
+#include <QUndoStack>
 #include <QWidget>
 #include <interfaces.h>
 
+class UndoCommand;
+class BrushInterface;
 class PaintWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit PaintWidget(QWidget *parent = nullptr);
-    void setBrushColor(const QColor &color);
-    void setBrushAlpha(int alpha);
-    void setBrushWidth(int width);
-    void setBrush(BrushInterface *i,const QString &name);
 
 signals:
 
 public slots:
-    void undo();
-    void redo();
+    void setBrushColor(const QColor &color);
+    void setBrushAlpha(int alpha);
+    void setBrushWidth(int width);
+    void setBrush(BrushInterface *i,const QString &name);
     void saveFile();
 
     // QWidget interface
@@ -39,9 +41,12 @@ public:
     const QColor &brushColor();
 
 
-signals:
-    void undoEmpty(bool );
-    void redoEmpty(bool );
+    void pushUndoStack(UndoCommand *comm);
+    QImage *getImage();
+    void setImage(QImage value);
+
+    QUndoStack *getUndoStack() const;
+
 private:
     void setupPainter(QPainter &painter);
 private:
@@ -51,17 +56,11 @@ private:
 
     BrushInterface *brushInterface{nullptr};
     QString brushName;
-    QImage *back{nullptr};
-    QVector<QPainterPath *>paintPath;
-    QMap<QPainterPath *,QColor> paintPathColor;
-    QMap<QPainterPath *,int> paintPathType;
-    QStack<CommandInterface *> commandUndo;
-    QStack<CommandInterface *> commandRedo;
+    QImage *image;
 
-    QPainterPath *oneDraw{nullptr};
-    int drawPathIndex{0};
-    int drawTmpPathIndex{0};
+    QUndoStack *undoStack;
 
+    QPainter *mPainter;
 };
 
 #endif // PAINTWIDGET_H
