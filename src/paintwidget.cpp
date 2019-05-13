@@ -8,7 +8,7 @@
 PaintWidget::PaintWidget(QWidget *parent) : QWidget(parent) {
 
   drawPathIndex = 0;
-  back=new QPixmap(800,600);
+  back=new QImage(800,600,QImage::Format_ARGB32_Premultiplied);
   back->fill(Qt::transparent);
 }
 
@@ -21,25 +21,25 @@ void PaintWidget::mousePressEvent(QMouseEvent *event) {
       brushInterface->mousePress(brushName, painter, event->pos());
       oneDraw=new QPainterPath();
       //!!warning 这个颜色究竟用什么？
+      paintPath.push_back(oneDraw);
       if(brushName=="Earser"){
 
           QColor t(color);
-          t.setAlpha(0);
-          paintPathColor.insert(oneDraw,t);
+//          t.setAlpha(0);
           paintPathType.insert(oneDraw,1);
+          paintPathColor.insert(oneDraw,t);
       }else{
           paintPathType.insert(oneDraw,0);
           paintPathColor.insert(oneDraw,color);
       }
       auto rect = brushInterface->drawInternal(oneDraw);
-//      paintPath.push_back(oneDraw);
-//      paintPathColor.insert(paintPath.size(),color);
-//      paintPathType.insert(paintPath.size(),0);
       this->update(rect);
       if (paintPath.size() > 15) {
         painter.begin(back);
         for (auto it = paintPath.cbegin(); it != paintPath.cbegin() + 6; ++it) {
         painter.fillPath(*(*it),paintPathColor.value(*it,Qt::green));
+        paintPathColor.remove(*it);
+        paintPathType.remove(*it);
         }
         painter.end();
         paintPath.erase(paintPath.begin(),paintPath.begin()+6);
@@ -54,15 +54,11 @@ void PaintWidget::mouseReleaseEvent(QMouseEvent *event) {
     if (brushInterface) {
       QPainter painter;
       brushInterface->mouseRelease(brushName, painter, event->pos());
-      auto rect = brushInterface->drawInternal(oneDraw);
-      //            oneDraw.setFillRule(Qt::WindingFill);
-      //            oneDraw = oneDraw.simplified();
-      //            paintPath.push_back(oneDraw);
-      //            paintPath.end()->addPath(oneDraw);
+      auto rect = brushInterface->drawInternal(paintPath.last());
       this->update(rect);
-      paintPath.push_back(oneDraw);
       DrawPathParameter parameter;
-      parameter.oneDraw=oneDraw;
+      //TODO 这个是用来记录这条命令所画的线的
+      parameter.oneDraw=paintPath.last();
       parameter.paintPath=&paintPath;
       parameter.painterPathColor=&paintPathColor;
       parameter.paintPathType=&paintPathType;
@@ -80,7 +76,7 @@ void PaintWidget::mouseMoveEvent(QMouseEvent *event) {
       QPainter painter;
       //            setupPainter(painter);
       brushInterface->mouseMove(brushName, painter, event->pos());
-      auto rect = brushInterface->drawInternal(oneDraw);
+      auto rect = brushInterface->drawInternal(paintPath.last());
       update(rect);
     }
   }
@@ -91,10 +87,10 @@ void PaintWidget::paintEvent(QPaintEvent *event) {
 
   QPainter painter(this);
 
-  painter.drawPixmap(0,0,*back);
+  painter.drawImage(0,0,*back);
   if(brushInterface){
       DrawPathParameter parameter;
-      parameter.oneDraw=oneDraw;
+//      parameter.oneDraw=oneDraw;
       parameter.paintPath=&paintPath;
       parameter.painterPathColor=&paintPathColor;
       parameter.paintPathType=&paintPathType;
@@ -116,7 +112,7 @@ void PaintWidget::setBrushColor(const QColor &color) { this->color = color;brush
 
 void PaintWidget::setBrushAlpha(int alpha) {}
 
-void PaintWidget::setBrushWidth(int width) { this->penWidth = width; }
+void PaintWidget::setBrushWidth(int width) { this->penWidth = width;brushInterface->setWidget(width); }
 
 void PaintWidget::setBrush(BrushInterface *i, const QString &name) {
   this->brushInterface = i;

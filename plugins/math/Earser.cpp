@@ -9,6 +9,8 @@ QStringList Earse::brushes() const {
 }
 
 QRect Earse::mousePress(const QString &brush, QPainter &painter, const QPoint &pos) {
+    QPainterPath tmp;
+    earserPath.swap(tmp);
     earserPath.moveTo(pos);
 
     return QRect();
@@ -26,19 +28,20 @@ QRect Earse::mouseRelease(const QString &brush, QPainter &painter, const QPoint 
 
 QRect Earse::drawInternal(QPainterPath *path) {
     stroker.setWidth(width);
-    *path=path->united(earserPath);
-    return QRect();
+    *path=path->united(stroker.createStroke(earserPath));
+    return path->boundingRect().toRect();
 }
 
 void Earse::draw(QPainter *painter, DrawPathParameter drawPathObj) {
 
     for (auto item:*drawPathObj.paintPath) {
         if (drawPathObj.paintPathType->value(item) == 0) {
-            painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-        } else {
-            painter->setCompositionMode(QPainter::CompositionMode_Xor);
-        }
+//            painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
         painter->fillPath(*item,drawPathObj.painterPathColor->value(item,Qt::green));
+        } else {
+            painter->setCompositionMode(QPainter::CompositionMode_Clear);
+            painter->fillPath(*item,QBrush(Qt::transparent));
+        }
     }
 }
 

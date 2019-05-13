@@ -51,7 +51,7 @@ private:
 
     BrushInterface *brushInterface{nullptr};
     QString brushName;
-    QPixmap *back{nullptr};
+    QImage *back{nullptr};
     QVector<QPainterPath *>paintPath;
     QMap<QPainterPath *,QColor> paintPathColor;
     QMap<QPainterPath *,int> paintPathType;

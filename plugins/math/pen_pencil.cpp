@@ -111,12 +111,8 @@ CommandInterface *PencilStyle::createCommand(DrawPathParameter parameter) {
 
 void PencilStyle::draw(QPainter *painter, DrawPathParameter drawPathObj) {
     // TODO 取消重复渲染
-    if (drawPathObj.oneDraw) {
-//        painter->setCompositionMode(QPainter::CompositionMode_Xor);
-        painter->fillPath(*drawPathObj.oneDraw, color);
-    }
     for (auto item:*drawPathObj.paintPath) {
-        painter->fillPath(*item, drawPathObj.painterPathColor->value(item, Qt::red));
+        painter->fillPath(*item, drawPathObj.painterPathColor->value(item, Qt::black));
 
     }
 }
