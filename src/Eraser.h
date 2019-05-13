@@ -22,6 +22,7 @@ public:
 
 private:
     QPoint mStart,mEnd;
+    QPen pen;
 
 };
 
