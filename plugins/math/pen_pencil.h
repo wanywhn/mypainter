@@ -3,8 +3,23 @@
 #include "bezier.h"
 #include <QPixmap>
 
+#include <QPainter>
 #include <interfaces.h>
 
+class PenCommonCommand:public CommandInterface{
+
+public:
+    PenCommonCommand(QPainterPath* path,QVector<QPainterPath *>*v);
+
+    // CommandInterface interface
+public:
+    QRect undo() Q_DECL_OVERRIDE;
+    QRect redo() Q_DECL_OVERRIDE;
+
+private:
+    QPainterPath *m_path;
+    QVector<QPainterPath *> *m_v;
+};
 class PencilStyle :public QObject,public BrushInterface{
 	Q_OBJECT
 	Q_PLUGIN_METADATA(IID "org.qt-project.Qt.Examples.PlugAndPaint.BrushInterface" FILE "basictools.json")
@@ -38,7 +53,7 @@ public:
 
 	QRect mouseRelease(const QString &brush, QPainter &painter, const QPoint &pos) override;
 
-	QRect drawInternal(QPainterPath &ppath) override;
+    QRect drawInternal(QPainterPath *ppath) override;
 
 private:
 	wpoint_arraylist *m_arr_list = NULL;
@@ -47,11 +62,20 @@ private:
 	float m_w_max, m_w_min; 
     QPixmap *m_mem_pixmap{nullptr};
 	unsigned int m_cx = 0, m_cy = 0;
+    QColor color;
 
-    // CommandInterface interface
-private:
-    void undo() Q_DECL_OVERRIDE;
-    void redo() Q_DECL_OVERRIDE;
+
+
+public:
+    CommandInterface *createCommand(QPainterPath *path, QVector<QPainterPath *> *v) Q_DECL_OVERRIDE;
+
+    // BrushInterface interface
+public:
+    void draw(QPainter *painter,QPainterPath *oneDraw, QVector<QPainterPath *> *v,QMap<QPainterPath*,QColor>*cmap) Q_DECL_OVERRIDE;
+
+    // BrushInterface interface
+public:
+    void setColor(QColor color) Q_DECL_OVERRIDE;
 };
 
 #endif //PEN_PELCIL_H

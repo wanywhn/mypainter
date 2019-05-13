@@ -89,11 +89,20 @@ void MainWindow::createActions()
 
     brushActionGroup = new QActionGroup(this);
 
+    actRedo=new QAction(tr("Redo"),this);
+    connect(actRedo,&QAction::triggered,paintWidget,&PaintWidget::redo);
+    actRedo->setEnabled(false);
+
+    actUndo=new QAction(tr("Undo"),this);
+    connect(actUndo,&QAction::triggered,paintWidget,&PaintWidget::undo);
+    actUndo->setEnabled(false);
 }
 
 void MainWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&File"));
+    fileMenu->addAction(actRedo);
+    fileMenu->addAction(actUndo);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
@@ -195,5 +204,6 @@ void MainWindow::init_ui()
 
 void MainWindow::init_conn()
 {
-
+    connect(paintWidget,&PaintWidget::redoEmpty,this->actRedo,&QAction::setDisabled);
+    connect(paintWidget,&PaintWidget::undoEmpty,this->actUndo,&QAction::setDisabled);
 }

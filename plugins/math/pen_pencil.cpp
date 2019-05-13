@@ -41,7 +41,7 @@ void PencilStyle::insert_last(int x, int y) {
     m_cur_path = nullptr;
 }
 
-QRect PencilStyle::drawInternal(QPainterPath &ppath) {
+QRect PencilStyle::drawInternal(QPainterPath *ppath) {
 
     if (!m_arr_list || !m_arr_list->first) return QRect{};
 
@@ -94,7 +94,7 @@ QRect PencilStyle::drawInternal(QPainterPath &ppath) {
         node = node->n;
         m_cur_last_index = 0;
     };
-    ppath=ppath.united(painterPath);
+    *ppath=ppath->united(painterPath);
 //    ppath.addPath(painterPath);
 
     m_arr_list->cur = m_arr_list->end;
@@ -103,6 +103,30 @@ QRect PencilStyle::drawInternal(QPainterPath &ppath) {
 
 
 }
+
+CommandInterface *PencilStyle::createCommand(QPainterPath *path, QVector<QPainterPath *> *v)
+{
+    return new PenCommonCommand(path,v);
+
+}
+
+void PencilStyle::draw(QPainter *painter,QPainterPath *oneDraw, QVector<QPainterPath *> *v,QMap<QPainterPath*,QColor>*cmap)
+{
+    // TODO 取消重复渲染
+    if(oneDraw){
+        painter->fillPath(*oneDraw,color);
+    }
+    for(auto item:*v){
+        painter->fillPath(*item,cmap->value(item,Qt::red));
+
+    }
+}
+
+void PencilStyle::setColor(QColor color)
+{
+   this->color=color;
+}
+
 
 
 QStringList PencilStyle::brushes() const {
@@ -130,3 +154,24 @@ PencilStyle::PencilStyle(QObject *parent) : QObject(parent) {
     this->m_w_min=1;
 }
 
+
+PenCommonCommand::PenCommonCommand(QPainterPath *path, QVector<QPainterPath *> *v):
+    m_path(path),m_v(v)
+{
+
+}
+
+QRect PenCommonCommand::undo()
+{
+//    std::remove(m_v->begin(),m_v->end(),m_path);
+   auto rect=m_v->back()->boundingRect().toRect();
+    m_v->pop_back();
+    return rect;
+}
+
+QRect PenCommonCommand::redo()
+{
+    m_v->push_back(m_path);
+    return m_path->boundingRect().toRect();
+
+}

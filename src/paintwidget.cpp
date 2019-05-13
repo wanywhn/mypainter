@@ -18,16 +18,18 @@ void PaintWidget::mousePressEvent(QMouseEvent *event) {
       QPainter painter;
       //            setupPainter(painter);
       brushInterface->mousePress(brushName, painter, event->pos());
-      oneDraw = oneDraw.subtracted(oneDraw);
+      oneDraw=new QPainterPath();
+      //!!warning 这个颜色究竟用什么？
+      paintPathColor.insert(oneDraw,color);
       auto rect = brushInterface->drawInternal(oneDraw);
-      paintPath.push_back(oneDraw);
+//      paintPath.push_back(oneDraw);
 //      paintPathColor.insert(paintPath.size(),color);
 //      paintPathType.insert(paintPath.size(),0);
       this->update(rect);
       if (paintPath.size() > 15) {
         painter.begin(back);
         for (auto it = paintPath.cbegin(); it != paintPath.cbegin() + 6; ++it) {
-        painter.fillPath((*it),Qt::green);
+        painter.fillPath(*(*it),Qt::green);
         }
         painter.end();
         paintPath.erase(paintPath.begin(),paintPath.begin()+6);
@@ -43,14 +45,16 @@ void PaintWidget::mouseReleaseEvent(QMouseEvent *event) {
       QPainter painter;
       //            setupPainter(painter);
       brushInterface->mouseRelease(brushName, painter, event->pos());
-      auto &d = paintPath[paintPath.size() - 1];
-      auto rect = brushInterface->drawInternal(d);
+      auto rect = brushInterface->drawInternal(oneDraw);
       //            oneDraw.setFillRule(Qt::WindingFill);
       //            oneDraw = oneDraw.simplified();
       //            paintPath.push_back(oneDraw);
       //            paintPath.end()->addPath(oneDraw);
       this->update(rect);
-      commandUndo.push(brushInterface);
+      paintPath.push_back(oneDraw);
+      commandUndo.push(brushInterface->createCommand(oneDraw,&paintPath));
+      oneDraw=nullptr;
+      emit undoEmpty(false);
     }
   }
 }
@@ -62,9 +66,7 @@ void PaintWidget::mouseMoveEvent(QMouseEvent *event) {
       QPainter painter;
       //            setupPainter(painter);
       brushInterface->mouseMove(brushName, painter, event->pos());
-      auto &d = paintPath[paintPath.size() - 1];
-      auto rect = brushInterface->drawInternal(d);
-      //            paintPath.end()->addPath(oneDraw);
+      auto rect = brushInterface->drawInternal(oneDraw);
       update(rect);
     }
   }
@@ -74,28 +76,12 @@ void PaintWidget::mouseMoveEvent(QMouseEvent *event) {
 void PaintWidget::paintEvent(QPaintEvent *event) {
 
   QPainter painter(this);
+
   painter.drawPixmap(0,0,*back);
-  // TODO 取消重复渲染
-  //    painter.drawPath(oneDraw);
-  setupPainter(painter);
-  //    for (auto i = drawPathIndex-1; i < paintPath.size(); ++i) {
-  QPainterPath tmp(QPoint(0,300));
-  tmp.lineTo(600,300);
-  QPainterPathStroker stmp;
-  stmp.setWidth(10);
-  tmp=stmp.createStroke(tmp);
-  painter.fillPath(tmp,Qt::green);
-  for (auto &i : paintPath) {
-    //        if(i>=0){
-    //            paintPath[i]=paintPath[i].simplified();
-    //        painter.drawPath(paintPath[i]);
-      if(tmp.intersects(i)){
-          i=i.subtracted(tmp);
-      }
-    painter.fillPath(i,Qt::red);
-    //        }
+  if(brushInterface){
+      brushInterface->draw(&painter,oneDraw,&paintPath,&paintPathColor);
   }
-  //    drawPathIndex = paintPath.size();
+
 }
 
 void PaintWidget::resizeEvent(QResizeEvent *event) {
@@ -106,7 +92,7 @@ int PaintWidget::brushWidth() { return penWidth; }
 
 const QColor &PaintWidget::brushColor() { return color; }
 
-void PaintWidget::setBrushColor(const QColor &color) { this->color = color; }
+void PaintWidget::setBrushColor(const QColor &color) { this->color = color;brushInterface->setColor(color) ;}
 
 void PaintWidget::setBrushAlpha(int alpha) {}
 
@@ -114,7 +100,38 @@ void PaintWidget::setBrushWidth(int width) { this->penWidth = width; }
 
 void PaintWidget::setBrush(BrushInterface *i, const QString &name) {
   this->brushInterface = i;
-  brushName = name;
+    brushName = name;
+}
+
+void PaintWidget::undo()
+{
+    if(commandUndo.empty()){
+        emit undoEmpty(true);
+        return;
+    }
+    emit redoEmpty(false);
+    auto com=commandUndo.pop();
+    auto rect=com->undo();
+    update(rect);
+    commandRedo.push(com);
+    emit undoEmpty(commandUndo.empty());
+    //repaint
+}
+
+void PaintWidget::redo()
+{
+    if(commandRedo.empty()){
+        emit redoEmpty(true);
+        return ;
+    }
+        emit undoEmpty(false);
+    auto com=commandRedo.pop();
+    auto rect=com->redo();
+    update(rect);
+    commandUndo.push(com);
+    emit redoEmpty(commandRedo.empty());
+    //repaint
+
 }
 
 void PaintWidget::setupPainter(QPainter &painter) {

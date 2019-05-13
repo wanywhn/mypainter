@@ -51,6 +51,8 @@
 #ifndef INTERFACES_H
 #define INTERFACES_H
 
+#include <QColor>
+#include <QRect>
 #include <QtPlugin>
 
 QT_BEGIN_NAMESPACE
@@ -64,11 +66,12 @@ class QString;
 class QStringList;
 QT_END_NAMESPACE
 class CommandInterface{
-    virtual void undo()=0;
-    virtual void redo()=0;
+public:
+    virtual QRect undo()=0;
+    virtual QRect redo()=0;
 };
 //! [0]
-class BrushInterface:public CommandInterface
+class BrushInterface
 {
 public:
     virtual ~BrushInterface() {}
@@ -80,7 +83,10 @@ public:
                              const QPoint &newPos) = 0;
     virtual QRect mouseRelease(const QString &brush, QPainter &painter,
                                const QPoint &pos) = 0;
-    virtual QRect drawInternal(QPainterPath &path)=0;
+    virtual QRect drawInternal(QPainterPath *path)=0;
+    virtual void draw(QPainter *painter,QPainterPath *oneDraw,QVector<QPainterPath*>*v,QMap<QPainterPath *,QColor>*cmap)=0;
+    virtual CommandInterface *createCommand(QPainterPath *path,QVector<QPainterPath *> *v)=0;
+    virtual void setColor(QColor color){}
 };
 //! [0]
 

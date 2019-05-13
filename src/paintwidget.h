@@ -2,6 +2,7 @@
 #define PAINTWIDGET_H
 
 #include <QMap>
+#include <QStack>
 #include <QWidget>
 #include <interfaces.h>
 
@@ -18,6 +19,8 @@ public:
 signals:
 
 public slots:
+    void undo();
+    void redo();
 
     // QWidget interface
 protected:
@@ -35,6 +38,9 @@ public:
     const QColor &brushColor();
 
 
+signals:
+    void undoEmpty(bool );
+    void redoEmpty(bool );
 private:
     void setupPainter(QPainter &painter);
 private:
@@ -45,13 +51,13 @@ private:
     BrushInterface *brushInterface{nullptr};
     QString brushName;
     QPixmap *back{nullptr};
-    QVector<QPainterPath >paintPath;
-    QMap<int,QColor> paintPathColor;
-    QMap<int,int> paintPathType;
+    QVector<QPainterPath *>paintPath;
+    QMap<QPainterPath *,QColor> paintPathColor;
+//    QMap<int,int> paintPathType;
     QStack<CommandInterface *> commandUndo;
     QStack<CommandInterface *> commandRedo;
 
-    QPainterPath oneDraw;
+    QPainterPath *oneDraw{nullptr};
     int drawPathIndex{0};
     int drawTmpPathIndex{0};
 
