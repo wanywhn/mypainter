@@ -3,12 +3,13 @@
 #include <QDebug>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QFileDialog>
 
 PaintWidget::PaintWidget(QWidget *parent) : QWidget(parent) {
 
   drawPathIndex = 0;
   back=new QPixmap(800,600);
-  back->fill();
+  back->fill(Qt::transparent);
 }
 
 void PaintWidget::mousePressEvent(QMouseEvent *event) {
@@ -20,7 +21,16 @@ void PaintWidget::mousePressEvent(QMouseEvent *event) {
       brushInterface->mousePress(brushName, painter, event->pos());
       oneDraw=new QPainterPath();
       //!!warning 这个颜色究竟用什么？
-      paintPathColor.insert(oneDraw,color);
+      if(brushName=="Earser"){
+
+          QColor t(color);
+          t.setAlpha(0);
+          paintPathColor.insert(oneDraw,t);
+          paintPathType.insert(oneDraw,1);
+      }else{
+          paintPathType.insert(oneDraw,0);
+          paintPathColor.insert(oneDraw,color);
+      }
       auto rect = brushInterface->drawInternal(oneDraw);
 //      paintPath.push_back(oneDraw);
 //      paintPathColor.insert(paintPath.size(),color);
@@ -29,7 +39,7 @@ void PaintWidget::mousePressEvent(QMouseEvent *event) {
       if (paintPath.size() > 15) {
         painter.begin(back);
         for (auto it = paintPath.cbegin(); it != paintPath.cbegin() + 6; ++it) {
-        painter.fillPath(*(*it),Qt::green);
+        painter.fillPath(*(*it),paintPathColor.value(*it,Qt::green));
         }
         painter.end();
         paintPath.erase(paintPath.begin(),paintPath.begin()+6);
@@ -43,7 +53,6 @@ void PaintWidget::mouseReleaseEvent(QMouseEvent *event) {
   if (event->button() == Qt::LeftButton) {
     if (brushInterface) {
       QPainter painter;
-      //            setupPainter(painter);
       brushInterface->mouseRelease(brushName, painter, event->pos());
       auto rect = brushInterface->drawInternal(oneDraw);
       //            oneDraw.setFillRule(Qt::WindingFill);
@@ -146,4 +155,10 @@ void PaintWidget::redo()
 void PaintWidget::setupPainter(QPainter &painter) {
   // TODO 从这里改变连接处？
   //    painter.setPen(QPen(color, penWidth, Qt::SolidLine));
+}
+
+void PaintWidget::saveFile() {
+    auto filepath=QFileDialog::getSaveFileUrl(this,tr("Save Path"),QDir::homePath());
+    back->save(filepath.toLocalFile(),"PNG");
+
 }

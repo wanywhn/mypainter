@@ -52,6 +52,7 @@ private:
     QAction *brushColorAct;
     QAction *actUndo;
     QAction *actRedo;
+    QAction *actSave;
 };
 
 #endif

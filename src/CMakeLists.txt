@@ -35,3 +35,4 @@ endforeach()
 set_target_properties(${PROJECT_NAME} PROPERTIES AUTOMOC TRUE)
 
 add_dependencies(${PROJECT_NAME} paintertools)
+#add_dependencies(${PROJECT_NAME} earser)

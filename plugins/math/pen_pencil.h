@@ -19,9 +19,11 @@ public:
 private:
     DrawPathParameter m_parameter;
 };
+
 class PencilStyle :public QObject,public BrushInterface{
 	Q_OBJECT
-	Q_PLUGIN_METADATA(IID "org.qt-project.Qt.Examples.PlugAndPaint.BrushInterface" FILE "basictools.json")
+
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.Examples.PlugAndPaint.BrushInterface" FILE "basictools.json")
 	Q_INTERFACES(BrushInterface)
 public:
     explicit PencilStyle(QObject *parent=nullptr);
@@ -61,7 +63,6 @@ private:
 	float m_w_max, m_w_min; 
     QPixmap *m_mem_pixmap{nullptr};
 	unsigned int m_cx = 0, m_cy = 0;
-    QColor color;
 
 
 
@@ -72,9 +73,6 @@ public:
 public:
     void draw(QPainter *painter, DrawPathParameter drawPathObj) Q_DECL_OVERRIDE;
 
-    // BrushInterface interface
-public:
-    void setColor(QColor color) Q_DECL_OVERRIDE;
 };
 
 #endif //PEN_PELCIL_H

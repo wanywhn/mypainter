@@ -82,11 +82,11 @@ QRect PencilStyle::drawInternal(QPainterPath *ppath) {
             ty = p->p.y;
             tw = p->w;
 
-            QPainterPath tmp(QPointF(fx,fy));
+            QPainterPath tmp(QPointF(fx, fy));
             //FIXME 有跳跃？
-            tmp.lineTo(tx,ty);
+            tmp.lineTo(tx, ty);
 //            painterPath.connectPath(stroker.createStroke(tmp));
-            painterPath=painterPath.united(stroker.createStroke(tmp));
+            painterPath = painterPath.united(stroker.createStroke(tmp));
 //            painterPath.addPath(stroker.createStroke(tmp));
             updateed = updateed.united(painterPath.boundingRect().toRect());
         };
@@ -94,7 +94,7 @@ QRect PencilStyle::drawInternal(QPainterPath *ppath) {
         node = node->n;
         m_cur_last_index = 0;
     };
-    *ppath=ppath->united(painterPath);
+    *ppath = ppath->united(painterPath);
 //    ppath.addPath(painterPath);
 
     m_arr_list->cur = m_arr_list->end;
@@ -104,33 +104,27 @@ QRect PencilStyle::drawInternal(QPainterPath *ppath) {
 
 }
 
-CommandInterface *PencilStyle::createCommand(DrawPathParameter parameter)
-{
+CommandInterface *PencilStyle::createCommand(DrawPathParameter parameter) {
     return new PenCommonCommand(parameter);
 
 }
 
-void PencilStyle::draw(QPainter *painter, DrawPathParameter drawPathObj)
-{
+void PencilStyle::draw(QPainter *painter, DrawPathParameter drawPathObj) {
     // TODO 取消重复渲染
-    if(drawPathObj.oneDraw){
-        painter->fillPath(*drawPathObj.oneDraw,color);
+    if (drawPathObj.oneDraw) {
+//        painter->setCompositionMode(QPainter::CompositionMode_Xor);
+        painter->fillPath(*drawPathObj.oneDraw, color);
     }
-    for(auto item:*drawPathObj.paintPath){
-        painter->fillPath(*item,drawPathObj.painterPathColor->value(item,Qt::red));
+    for (auto item:*drawPathObj.paintPath) {
+        painter->fillPath(*item, drawPathObj.painterPathColor->value(item, Qt::red));
 
     }
-}
-
-void PencilStyle::setColor(QColor color)
-{
-   this->color=color;
 }
 
 
 
 QStringList PencilStyle::brushes() const {
-    return QStringList({"Pencil","Earser"});
+    return QStringList({"Pencil" });
 }
 
 QRect PencilStyle::mousePress(const QString &brush, QPainter &painter, const QPoint &pos) {
@@ -150,28 +144,27 @@ QRect PencilStyle::mouseRelease(const QString &brush, QPainter &painter, const Q
 
 PencilStyle::PencilStyle(QObject *parent) : QObject(parent) {
     m_arr_list = z_new_fpoint_arraylist();
-    this->m_w_max=10;
-    this->m_w_min=1;
+    this->m_w_max = 10;
+    this->m_w_min = 1;
 }
 
 
-PenCommonCommand::PenCommonCommand(DrawPathParameter parameter) :m_parameter(parameter)
-{
+PenCommonCommand::PenCommonCommand(DrawPathParameter parameter) : m_parameter(parameter) {
 
 }
 
-QRect PenCommonCommand::undo()
-{
+QRect PenCommonCommand::undo() {
 //    std::remove(m_v->begin(),m_v->end(),m_path);
 //!! warnning
-   auto rect=m_parameter.paintPath->back()->boundingRect().toRect();
+    auto rect = m_parameter.paintPath->back()->boundingRect().toRect();
     m_parameter.paintPath->pop_back();
     return rect;
 }
 
-QRect PenCommonCommand::redo()
-{
+QRect PenCommonCommand::redo() {
     m_parameter.paintPath->push_back(m_parameter.oneDraw);
     return m_parameter.oneDraw->boundingRect().toRect();
 
 }
+
+

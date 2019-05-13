@@ -96,6 +96,8 @@ void MainWindow::createActions()
     actUndo=new QAction(tr("Undo"),this);
     connect(actUndo,&QAction::triggered,paintWidget,&PaintWidget::undo);
     actUndo->setEnabled(false);
+
+    actSave=new QAction(tr("Save"),this);
 }
 
 void MainWindow::createMenus()
@@ -103,6 +105,7 @@ void MainWindow::createMenus()
     fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(actRedo);
     fileMenu->addAction(actUndo);
+    fileMenu->addAction(actSave);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
@@ -159,10 +162,6 @@ void MainWindow::populateMenus(QObject *plugin)
         addToMenu(plugin, iBrush->brushes(), brushMenu, SLOT(changeBrush()),
                   brushActionGroup);
 
-    ShapeInterface *iShape = qobject_cast<ShapeInterface *>(plugin);
-    if (iShape)
-        addToMenu(plugin, iShape->shapes(), shapesMenu, SLOT(insertShape()));
-
     FilterInterface *iFilter = qobject_cast<FilterInterface *>(plugin);
     if (iFilter)
         addToMenu(plugin, iFilter->filters(), filterMenu, SLOT(applyFilter()));
@@ -196,4 +195,5 @@ void MainWindow::init_conn()
 {
     connect(paintWidget,&PaintWidget::redoEmpty,this->actRedo,&QAction::setDisabled);
     connect(paintWidget,&PaintWidget::undoEmpty,this->actUndo,&QAction::setDisabled);
+    connect(actSave,&QAction::triggered,paintWidget,&PaintWidget::saveFile);
 }

@@ -21,6 +21,7 @@ signals:
 public slots:
     void undo();
     void redo();
+    void saveFile();
 
     // QWidget interface
 protected:

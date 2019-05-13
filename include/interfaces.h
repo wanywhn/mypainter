@@ -54,6 +54,7 @@
 #include <QColor>
 #include <QRect>
 #include <QtPlugin>
+#include <QMap>
 
 QT_BEGIN_NAMESPACE
 class QImage;
@@ -93,17 +94,16 @@ public:
     virtual QRect drawInternal(QPainterPath *path)=0;
     virtual void draw(QPainter *painter, DrawPathParameter drawPathObj) =0;
     virtual CommandInterface *createCommand(DrawPathParameter parameter) =0;
-    virtual void setColor(QColor color){}
-};
-class ShapeInterface
-{
-public:
-    virtual ~ShapeInterface() {}
+    void setColor(QColor color){this->color= color;}
+    void setWidget(int wid){this->width=wid;}
 
-    virtual QStringList shapes() const = 0;
-    virtual QPainterPath generateShape(const QString &shape,
-                                       QWidget *parent) = 0;
+protected:
+    QColor color;
+    int width;
+
+
 };
+
 class FilterInterface
 {
 public:
@@ -119,13 +119,10 @@ QT_BEGIN_NAMESPACE
 
 Q_DECLARE_INTERFACE(BrushInterface, BrushInterface_iid)
 
-#define ShapeInterface_iid  "org.qt-project.Qt.Examples.PlugAndPaint.ShapeInterface"
-
-Q_DECLARE_INTERFACE(ShapeInterface, ShapeInterface_iid)
 #define FilterInterface_iid "org.qt-project.Qt.Examples.PlugAndPaint.FilterInterface"
 
-Q_DECLARE_INTERFACE(FilterInterface, FilterInterface_iid)
-//! [4] //! [5]
+Q_DECLARE_INTERFACE(FilterInterface,FilterInterface_iid)
+
 QT_END_NAMESPACE
 
 #endif

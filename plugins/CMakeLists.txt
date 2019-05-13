@@ -21,11 +21,16 @@ add_library(${PROJECT_NAME}
         math/pen_pencil.h
         math/bezier.c
         math/bezier.h
-    )
-target_include_directories(${PROJECT_NAME} PRIVATE .)
-target_include_directories(${PROJECT_NAME} PRIVATE math)
+        )
+add_library(earser SHARED math/Earser.cpp math/Earser.h)
+
+set(LIBS ${PROJECT_NAME} earser)
+foreach(it ${LIBS})
+target_include_directories(${it} PRIVATE .)
+target_include_directories(${it} PRIVATE math)
 
 foreach(item ${QTPKG})
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${item})
+    target_link_libraries(${it} PRIVATE ${item})
 endforeach()
-set_target_properties(${PROJECT_NAME} PROPERTIES AUTOMOC TRUE)
+set_target_properties(${it} PROPERTIES AUTOMOC TRUE)
+    endforeach()
