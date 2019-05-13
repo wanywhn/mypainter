@@ -54,7 +54,7 @@ void MainWindow::brushWidth()
 //! [0]
 void MainWindow::changeBrush()
 {
-    QAction *action = qobject_cast<QAction *>(sender());
+    auto *action = qobject_cast<QAction *>(sender());
     BrushInterface *iBrush = qobject_cast<BrushInterface *>(action->parent());
     const QString brush = action->text();
 
@@ -128,16 +128,6 @@ void MainWindow::loadPlugins()
 
     pluginsDir = QDir(qApp->applicationDirPath());
 
-#if defined(Q_OS_WIN)
-    if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
-        pluginsDir.cdUp();
-#elif defined(Q_OS_MAC)
-    if (pluginsDir.dirName() == "MacOS") {
-        pluginsDir.cdUp();
-        pluginsDir.cdUp();
-        pluginsDir.cdUp();
-    }
-#endif
     pluginsDir.cd("../plugins");
 //! [5]
 

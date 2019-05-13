@@ -33,3 +33,5 @@ foreach(item ${QTPKG})
     target_link_libraries(${PROJECT_NAME} PUBLIC ${item})
 endforeach()
 set_target_properties(${PROJECT_NAME} PROPERTIES AUTOMOC TRUE)
+
+add_dependencies(${PROJECT_NAME} paintertools)

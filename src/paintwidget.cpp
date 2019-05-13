@@ -52,7 +52,12 @@ void PaintWidget::mouseReleaseEvent(QMouseEvent *event) {
       //            paintPath.end()->addPath(oneDraw);
       this->update(rect);
       paintPath.push_back(oneDraw);
-      commandUndo.push(brushInterface->createCommand(oneDraw,&paintPath));
+      DrawPathParameter parameter;
+      parameter.oneDraw=oneDraw;
+      parameter.paintPath=&paintPath;
+      parameter.painterPathColor=&paintPathColor;
+      parameter.paintPathType=&paintPathType;
+      commandUndo.push(brushInterface->createCommand(parameter));
       oneDraw=nullptr;
       emit undoEmpty(false);
     }
@@ -79,7 +84,13 @@ void PaintWidget::paintEvent(QPaintEvent *event) {
 
   painter.drawPixmap(0,0,*back);
   if(brushInterface){
-      brushInterface->draw(&painter,oneDraw,&paintPath,&paintPathColor);
+      DrawPathParameter parameter;
+      parameter.oneDraw=oneDraw;
+      parameter.paintPath=&paintPath;
+      parameter.painterPathColor=&paintPathColor;
+      parameter.paintPathType=&paintPathType;
+
+      brushInterface->draw(&painter, parameter);
   }
 
 }
@@ -130,8 +141,6 @@ void PaintWidget::redo()
     update(rect);
     commandUndo.push(com);
     emit redoEmpty(commandRedo.empty());
-    //repaint
-
 }
 
 void PaintWidget::setupPainter(QPainter &painter) {

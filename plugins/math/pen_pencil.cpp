@@ -104,20 +104,20 @@ QRect PencilStyle::drawInternal(QPainterPath *ppath) {
 
 }
 
-CommandInterface *PencilStyle::createCommand(QPainterPath *path, QVector<QPainterPath *> *v)
+CommandInterface *PencilStyle::createCommand(DrawPathParameter parameter)
 {
-    return new PenCommonCommand(path,v);
+    return new PenCommonCommand(parameter);
 
 }
 
-void PencilStyle::draw(QPainter *painter,QPainterPath *oneDraw, QVector<QPainterPath *> *v,QMap<QPainterPath*,QColor>*cmap)
+void PencilStyle::draw(QPainter *painter, DrawPathParameter drawPathObj)
 {
     // TODO 取消重复渲染
-    if(oneDraw){
-        painter->fillPath(*oneDraw,color);
+    if(drawPathObj.oneDraw){
+        painter->fillPath(*drawPathObj.oneDraw,color);
     }
-    for(auto item:*v){
-        painter->fillPath(*item,cmap->value(item,Qt::red));
+    for(auto item:*drawPathObj.paintPath){
+        painter->fillPath(*item,drawPathObj.painterPathColor->value(item,Qt::red));
 
     }
 }
@@ -130,7 +130,7 @@ void PencilStyle::setColor(QColor color)
 
 
 QStringList PencilStyle::brushes() const {
-    return QStringList("Pencil");
+    return QStringList({"Pencil","Earser"});
 }
 
 QRect PencilStyle::mousePress(const QString &brush, QPainter &painter, const QPoint &pos) {
@@ -155,8 +155,7 @@ PencilStyle::PencilStyle(QObject *parent) : QObject(parent) {
 }
 
 
-PenCommonCommand::PenCommonCommand(QPainterPath *path, QVector<QPainterPath *> *v):
-    m_path(path),m_v(v)
+PenCommonCommand::PenCommonCommand(DrawPathParameter parameter) :m_parameter(parameter)
 {
 
 }
@@ -164,14 +163,15 @@ PenCommonCommand::PenCommonCommand(QPainterPath *path, QVector<QPainterPath *> *
 QRect PenCommonCommand::undo()
 {
 //    std::remove(m_v->begin(),m_v->end(),m_path);
-   auto rect=m_v->back()->boundingRect().toRect();
-    m_v->pop_back();
+//!! warnning
+   auto rect=m_parameter.paintPath->back()->boundingRect().toRect();
+    m_parameter.paintPath->pop_back();
     return rect;
 }
 
 QRect PenCommonCommand::redo()
 {
-    m_v->push_back(m_path);
-    return m_path->boundingRect().toRect();
+    m_parameter.paintPath->push_back(m_parameter.oneDraw);
+    return m_parameter.oneDraw->boundingRect().toRect();
 
 }

@@ -65,6 +65,13 @@ class QRect;
 class QString;
 class QStringList;
 QT_END_NAMESPACE
+class DrawPathParameter{
+public:
+    QPainterPath *oneDraw;
+    QVector<QPainterPath *> *paintPath;
+    QMap<QPainterPath *,QColor> *painterPathColor;
+    QMap<QPainterPath *,int> *paintPathType;
+};
 class CommandInterface{
 public:
     virtual QRect undo()=0;
@@ -84,13 +91,10 @@ public:
     virtual QRect mouseRelease(const QString &brush, QPainter &painter,
                                const QPoint &pos) = 0;
     virtual QRect drawInternal(QPainterPath *path)=0;
-    virtual void draw(QPainter *painter,QPainterPath *oneDraw,QVector<QPainterPath*>*v,QMap<QPainterPath *,QColor>*cmap)=0;
-    virtual CommandInterface *createCommand(QPainterPath *path,QVector<QPainterPath *> *v)=0;
+    virtual void draw(QPainter *painter, DrawPathParameter drawPathObj) =0;
+    virtual CommandInterface *createCommand(DrawPathParameter parameter) =0;
     virtual void setColor(QColor color){}
 };
-//! [0]
-
-//! [1]
 class ShapeInterface
 {
 public:
@@ -100,9 +104,6 @@ public:
     virtual QPainterPath generateShape(const QString &shape,
                                        QWidget *parent) = 0;
 };
-//! [1]
-
-//! [2]
 class FilterInterface
 {
 public:
@@ -112,19 +113,15 @@ public:
     virtual QImage filterImage(const QString &filter, const QImage &image,
                                QWidget *parent) = 0;
 };
-//! [2]
 
 QT_BEGIN_NAMESPACE
-//! [3] //! [4]
 #define BrushInterface_iid "org.qt-project.Qt.Examples.PlugAndPaint.BrushInterface"
 
 Q_DECLARE_INTERFACE(BrushInterface, BrushInterface_iid)
-//! [3]
 
 #define ShapeInterface_iid  "org.qt-project.Qt.Examples.PlugAndPaint.ShapeInterface"
 
 Q_DECLARE_INTERFACE(ShapeInterface, ShapeInterface_iid)
-//! [5]
 #define FilterInterface_iid "org.qt-project.Qt.Examples.PlugAndPaint.FilterInterface"
 
 Q_DECLARE_INTERFACE(FilterInterface, FilterInterface_iid)

@@ -9,7 +9,7 @@
 class PenCommonCommand:public CommandInterface{
 
 public:
-    PenCommonCommand(QPainterPath* path,QVector<QPainterPath *>*v);
+    PenCommonCommand(DrawPathParameter parameter);
 
     // CommandInterface interface
 public:
@@ -17,15 +17,14 @@ public:
     QRect redo() Q_DECL_OVERRIDE;
 
 private:
-    QPainterPath *m_path;
-    QVector<QPainterPath *> *m_v;
+    DrawPathParameter m_parameter;
 };
 class PencilStyle :public QObject,public BrushInterface{
 	Q_OBJECT
 	Q_PLUGIN_METADATA(IID "org.qt-project.Qt.Examples.PlugAndPaint.BrushInterface" FILE "basictools.json")
 	Q_INTERFACES(BrushInterface)
 public:
-	PencilStyle(QObject *parent=nullptr);
+    explicit PencilStyle(QObject *parent=nullptr);
 
 	~PencilStyle() override;
 
@@ -67,11 +66,11 @@ private:
 
 
 public:
-    CommandInterface *createCommand(QPainterPath *path, QVector<QPainterPath *> *v) Q_DECL_OVERRIDE;
+    CommandInterface *createCommand(DrawPathParameter parameter) Q_DECL_OVERRIDE;
 
     // BrushInterface interface
 public:
-    void draw(QPainter *painter,QPainterPath *oneDraw, QVector<QPainterPath *> *v,QMap<QPainterPath*,QColor>*cmap) Q_DECL_OVERRIDE;
+    void draw(QPainter *painter, DrawPathParameter drawPathObj) Q_DECL_OVERRIDE;
 
     // BrushInterface interface
 public:

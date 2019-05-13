@@ -53,7 +53,7 @@ private:
     QPixmap *back{nullptr};
     QVector<QPainterPath *>paintPath;
     QMap<QPainterPath *,QColor> paintPathColor;
-//    QMap<int,int> paintPathType;
+    QMap<QPainterPath *,int> paintPathType;
     QStack<CommandInterface *> commandUndo;
     QStack<CommandInterface *> commandRedo;
 
