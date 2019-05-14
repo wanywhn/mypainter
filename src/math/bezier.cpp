@@ -167,7 +167,7 @@ void BezierBase::insert_first(float x, float y) {
     if (m_cur_path)
         z_drop_fpoint_array(m_cur_path);
 
-    m_cur_path = z_fpoint_arraylist_append_new(m_arr_list, m_w_max, m_w_min);
+    m_cur_path = z_fpoint_arraylist_append_new(m_arr_list);
 
     z_insert_point(m_cur_path, point);
 
@@ -176,7 +176,7 @@ void BezierBase::insert_first(float x, float y) {
 void BezierBase::insert(float x, float y) {
     spoint point = {(float) x, (float) y};
     if (!m_cur_path)
-        m_cur_path = z_fpoint_arraylist_append_new(m_arr_list, m_w_max, m_w_min);
+        m_cur_path = z_fpoint_arraylist_append_new(m_arr_list);
     z_insert_point(m_cur_path, point);
 }
 
@@ -195,8 +195,8 @@ BezierBase::~BezierBase() {
     if (m_arr_list) z_drop_fpoint_arraylist(m_arr_list);
 }
 
-wpoints_array *BezierBase::z_fpoint_arraylist_append_new(wpoint_arraylist *l, float maxwidth, float minwidth) {
-    wpoints_array *a = z_new_fpoint_array(24, maxwidth, minwidth);
+wpoints_array *BezierBase::z_fpoint_arraylist_append_new(wpoint_arraylist *l) {
+    wpoints_array *a = z_new_fpoint_array(24);
     z_fpoint_arraylist_append(l, a);
     return a;
 }
@@ -255,7 +255,7 @@ void BezierBase::z_insert_last_point(wpoints_array *arr, spoint e) {
     if (!arr) return;
     long len = arr->len;
     if (len == 0) return;
-    wpoints_array *points = z_new_fpoint_array(51, arr->maxwidth, arr->minwidth);
+    wpoints_array *points = z_new_fpoint_array(51);
     wfpoint zb = arr->point[len - 1];
     z_fpoint_add(points, zb);
 
@@ -275,9 +275,9 @@ float BezierBase::z_insert_point(wpoints_array *arr, spoint new_point) {
     if (!arr) return 0;
     int len = arr->len;
 
-//	spoint zp = {new_point.x, new_point.y};
     if (0 == len) {
-        wfpoint p = {new_point, 1};
+        //TODO 首点
+        wfpoint p = {new_point,m_width};
         z_fpoint_add(arr, p);
         z_fpoint_array_set_last_info(arr, new_point, p.w);
         return p.w;
@@ -288,11 +288,10 @@ float BezierBase::z_insert_point(wpoints_array *arr, spoint new_point) {
     float last_ms = arr->last_ms;
     spoint last_point = arr->last_point;
 
-    printf("cur_ms - last_ms = %f\n", cur_ms - last_ms);
-    //TODO 两次采样时间小于25毫秒, 或者距离小于2个像素, 不采样计算!!!
-    //TODO 起始伐值，可以控制第一笔的大小
+//    printf("cur_ms - last_ms = %f\n", cur_ms - last_ms);
+//TODO 启动伐值,控制连贯性
     float distance = z_distance(new_point, last_point);
-    if ((cur_ms - last_ms) < 0.3 || distance < 2) {
+    if ((cur_ms - last_ms) < 1 || distance < 2) {
         return 0;
     }
 
@@ -300,19 +299,23 @@ float BezierBase::z_insert_point(wpoints_array *arr, spoint new_point) {
     tpoint bt = {{last_point.x, last_point.y}, last_ms};
     tpoint et = {new_point, cur_ms};
     float w = (z_linewidth(bt, et, last_width, step) + last_width) / 2;
-    wpoints_array *points = z_new_fpoint_array(51, arr->maxwidth, arr->minwidth);
+    wpoints_array *points = z_new_fpoint_array(51);
     wfpoint generated_lastpoint = arr->point[len - 1];
     z_fpoint_add(points, generated_lastpoint);
 
+
+    //TODO k=2
+    int k=2;
+    ///这一点为第二点时。直接按比例生成一个中间点。
     if (1 == len) {
-        wfpoint p = {{(bt.p.x + et.p.x + 1) / 2, (bt.p.y + et.p.y + 1) / 2}, w};
+        wfpoint p = {{(bt.p.x + et.p.x + 1) / k, (bt.p.y + et.p.y + 1) / k}, w};
         z_fpoint_differential_add(points, p);
         w = p.w;
     } else {
+        ///
         wfpoint bw = generated_lastpoint;
         spoint c = {last_point.x, last_point.y};
-        //TODO k=0.5
-        wfpoint ew = {{(last_point.x + new_point.x) / 2, (last_point.y + new_point.y) / 2}, w};
+        wfpoint ew = {{(last_point.x + new_point.x) / k, (last_point.y + new_point.y) / k}, w};
         z_square_bezier(points, bw, c, ew);
     }
 
@@ -347,20 +350,20 @@ wpoint_arraylist *BezierBase::z_keep_fpoint_arraylist(wpoint_arraylist *l) {
     return l;
 }
 
-wpoints_array *BezierBase::z_new_fpoint_array(int initsize, float maxwidth, float minwidth) {
-    if (initsize <= 0) return NULL;
+wpoints_array *BezierBase::z_new_fpoint_array(int initsize) {
+    if (initsize <= 0) return nullptr;
     wpoints_array *a = static_cast<wpoints_array *>(malloc(sizeof(wpoints_array)));
     a->point = static_cast<wfpoint *>(z_malloc_array(initsize, sizeof(wfpoint)));
     a->ref = 1;
     a->len = 0;
 
-    if (maxwidth < 0 || minwidth < 0 || maxwidth < minwidth) {
-        maxwidth = defualt_max_width;
-        minwidth = default_min_width;
-    }
+//    if (maxwidth < 0 || minwidth < 0 || maxwidth < minwidth) {
+//        maxwidth = defualt_max_width;
+//        minwidth = default_min_width;
+//    }
 
-    a->maxwidth = maxwidth;
-    a->minwidth = minwidth;
+//    a->maxwidth = maxwidth;
+//    a->minwidth = minwidth;
 
     a->cap = initsize;
     return a;
@@ -463,6 +466,13 @@ void BezierBase::z_square_bezier(wpoints_array *a, wfpoint b, spoint c, wfpoint 
         wfpoint pw = {{x1, y1}, w};
         z_fpoint_differential_add(a, pw);
     }
+}
+
+void BezierBase::setWidth(float width) {
+
+    m_width=width;
+    m_w_max = width * 1.1;
+    m_w_min = width * 0.7;
 }
 
 

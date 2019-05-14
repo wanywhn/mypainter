@@ -36,7 +36,7 @@ QRect PencilStyle::drawInternal(QPaintDevice *device) {
 
 
         while (p < last) {
-            float fontwid = p->w * base->getM_w_max();
+            float fontwid = p->w ;//* base->getM_w_max();
             QPen pen(painter.pen());
             pen.setWidthF(fontwid);
             painter.setPen(pen);

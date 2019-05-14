@@ -3,32 +3,42 @@
 
 #include <stdint.h>
 
-typedef struct spoint_s spoint;
-typedef struct wpoint_s wfpoint;
-typedef struct tpoint_s tpoint;
-typedef struct wpoint_array_s wpoints_array;
+//typedef struct spoint_s spoint;
+//typedef struct wpoint_s wfpoint;
+//typedef struct tpoint_s tpoint;
+
+//typedef struct wpoint_array_s wpoints_array;
 typedef struct wpoint_arraylist_node_s wpoint_arraylist_node;
-typedef struct wpoint_arraylist_s wpoint_arraylist;
+
+//typedef struct wpoint_arraylist_s wpoint_arraylist;
 
 
-struct spoint_s {
+typedef struct {
     float x, y;
-};
+} spoint;
 
-struct wpoint_s {
+/*!
+ * \struct wfpoint
+ * \brief 代表一个带笔画宽度的点
+ */
+typedef struct {
     spoint p;
     float w;
-};
+}wfpoint;
 
-struct tpoint_s {
+typedef struct {
     spoint p;
     float t;
-};
+}tpoint;
 
-struct wpoint_array_s {
+/*!
+ * \struct wpoints_array
+ * \brief 存放一个连续笔画的所有路径点
+ */
+typedef struct {
     wfpoint *point;
-    float maxwidth;
-    float minwidth;
+//    float maxwidth;
+//    float minwidth;
     int ref;
     int len;
     int cap;
@@ -36,19 +46,20 @@ struct wpoint_array_s {
     spoint last_point;
     float last_width;
     float last_ms;
-};
+} wpoints_array;
+
 
 struct wpoint_arraylist_node_s {
     wpoints_array *a;
     wpoint_arraylist_node *n;
 };
 
-struct wpoint_arraylist_s {
+typedef  struct wpoint_arraylist_s {
     int ref;
     wpoint_arraylist_node *first;
     wpoint_arraylist_node *end;
     wpoint_arraylist_node *cur;
-};
+}wpoint_arraylist;
 
 
 class BezierBase {
@@ -56,17 +67,28 @@ public:
 
     BezierBase();
 
+      /*!
+       * 作为一个连笔的开始，插入第一个点。
+       * \param x
+       * \param y
+       */
     void insert_first(float x, float y);
 
+    /*!
+     * 作为连笔中间的点。
+     * \param x
+     * \param y
+     */
     void insert(float x, float y);
 
+     /*!
+      * 作为连笔中的最后一点。
+      * \param x
+      * \param y
+      */
     void insert_last(float x, float y);
 
-    virtual void setWidth(float width) {
-
-        m_w_max = width * 1.5;
-        m_w_min = width * 0.5;
-    }
+    virtual void setWidth(float width);
 
     virtual ~BezierBase();
 
@@ -83,14 +105,24 @@ private:
 
     void z_fpoint_arraylist_removelast(wpoint_arraylist *l);
 
-    wpoints_array *z_fpoint_arraylist_append_new(wpoint_arraylist *l, float maxwidth, float minwidth);
+    /*!
+     * \brief 在路径链表\p l 中添加一个新的路径，并返回该新路径
+     * \param l 将要添加进的路径链表
+     * \return 指向新路径的指针
+     */
+    wpoints_array *z_fpoint_arraylist_append_new(wpoint_arraylist *l);
 
-    wpoints_array *z_new_fpoint_array(int initsize, float maxwidth, float minwidth);
+    wpoints_array *z_new_fpoint_array(int initsize);
 
     void z_drop_fpoint_arraylist(wpoint_arraylist *l);
 
     void z_drop_fpoint_array(wpoints_array *a);
 
+    /*!
+     * \brief 将点的数组\p a 插入数组链表\p l 的尾部
+     * \param l
+     * \param a
+     */
     void z_fpoint_arraylist_append(wpoint_arraylist *l, wpoints_array *a);
 
     wpoints_array *z_keep_fpoint_array(wpoints_array *a);
@@ -122,8 +154,11 @@ public:
     wpoint_arraylist *getM_arr_list() const;
 
 private:
+    /**
+     * 存放一次连笔的路径
+     */
     wpoints_array *m_cur_path = nullptr;
-    float m_w_max{7}, m_w_min{4};
+    float m_w_max{7}, m_w_min{4},m_width{6};
 public:
     float getM_w_max() const;
 };
