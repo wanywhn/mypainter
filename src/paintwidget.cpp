@@ -4,11 +4,14 @@
 #include <QFileDialog>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QtWidgets/QVBoxLayout>
 
 PaintWidget::PaintWidget(QWidget *parent) : QWidget(parent) {
 
   image=new QImage(800,600,QImage::Format_ARGB32_Premultiplied);
   image->fill(Qt::transparent);
+  this->resize(image->size());
+
   this->undoStack=new QUndoStack(this);
 }
 
@@ -118,3 +121,11 @@ void PaintWidget::saveFile() {
 float PaintWidget::brushAlpha() {
     return alpha;
 }
+
+void PaintWidget::zoom(float factor, QPoint centerPos) {
+  this->setImage(this->getImage()->transformed(QTransform::fromScale(factor, factor)));
+  this->resize((this->rect().width())*factor, (this->rect().height())*factor);
+
+}
+
+

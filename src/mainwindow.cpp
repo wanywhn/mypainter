@@ -15,17 +15,50 @@
 #include <QColorDialog>
 #include <QInputDialog>
 #include <QApplication>
+#include <QDebug>
+#include <QScrollBar>
+class myScrollArea:public QScrollArea{
+protected:
+public:
+    myScrollArea(QWidget *parent) : QScrollArea(parent) {}
+
+public:
+    void zoom(float factor,QPoint pos){
+//    auto size=this->widget()->size();
+//    float xp=pos.x()/size.width();
+//    float yp=pos.y()/size.height();
+    QPoint f=pos*factor;
+    f.rx()+=this->widget()->width()/2;
+    f.ry()+=this->widget()->height()/2;
+
+this->ensureVisible(f.x(),f.y());
+
+
+}
+    void wheelEvent(QWheelEvent *event) override {
+        if(event->modifiers()&Qt::ControlModifier){
+        }else if(event->modifiers()&Qt::ShiftModifier){
+            auto hb=this->horizontalScrollBar();
+            hb->setValue(hb->value()+event->angleDelta().y()/15);
+        }else{
+            QAbstractScrollArea::wheelEvent(event);
+        }
+    }
+
+};
 
 MainWindow::MainWindow()
 {
     paintWidget=new PaintWidget(this);
+    scrollArea=new myScrollArea(this);
+    scrollArea->setWidget(paintWidget);
     mUndoGroup=new QUndoGroup(this);
     mUndoGroup->addStack(paintWidget->getUndoStack());
     mUndoGroup->setActiveStack(paintWidget->getUndoStack());
 
     init_ui();
     init_conn();
-    this->setCentralWidget(paintWidget);
+    this->setCentralWidget(scrollArea);
 
 
     setWindowTitle(tr("Plug & Paint"));
@@ -135,4 +168,24 @@ void MainWindow::brushAlpha() {
         paintWidget->setBrushAlpha(newAlpha);
     }
 
+}
+
+void MainWindow::wheelEvent(QWheelEvent *event) {
+    if(event->modifiers()&Qt::ControlModifier){
+
+        float delt=10;
+        delt+=event->delta()/120;
+        if(delt<0.1){
+            delt=0.1;
+        }
+        if(delt>100){
+            delt=100;
+        }
+        qDebug()<<"pos"<<event->pos();
+        paintWidget->zoom(delt / 10, event->pos());
+        scrollArea->zoom(delt/10,event->pos());
+
+    }else{
+        QWidget::wheelEvent(event);
+    }
 }

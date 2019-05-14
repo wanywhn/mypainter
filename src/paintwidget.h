@@ -7,6 +7,7 @@
 #include <QUndoStack>
 #include <QWidget>
 #include <interfaces.h>
+#include <QtWidgets/QScrollArea>
 
 class UndoCommand;
 class BrushInterface;
@@ -16,7 +17,8 @@ class PaintWidget : public QWidget
 public:
     explicit PaintWidget(QWidget *parent = nullptr);
 
-signals:
+
+    void zoom(float factor, QPoint centerPos);
 
 public slots:
     void setBrushColor(QColor &color);
@@ -33,6 +35,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
     void resizeEvent(QResizeEvent *event) override;
+
 
     // QPaintDevice interface
 public:
@@ -53,6 +56,7 @@ private:
     BrushInterface *brushInterface{nullptr};
     QString brushName;
     QImage *image;
+    QScrollArea *scrollArea;
     int alpha{255};
 
     QUndoStack *undoStack;
