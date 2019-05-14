@@ -19,7 +19,7 @@ include_directories(math)
 add_executable(${PROJECT_NAME}
         math/pen_pencil.cpp
         math/pen_pencil.h
-        math/bezier.c
+        math/bezier.cpp
         math/bezier.h
         main.cpp
         mainwindow.cpp
