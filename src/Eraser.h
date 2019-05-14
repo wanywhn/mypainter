@@ -12,16 +12,16 @@ class Eraser : public QObject, public BrushInterface{
 public:
     explicit Eraser(QObject *parent);
 
-    QRect mousePress(const QString &brush, QImage *image, const QPoint &pos) override;
+    QRect mousePress(const QString &brush, QImage *image, const QPointF &pos) override;
 
-    QRect mouseMove(const QString &brush, QImage *image, const QPoint &newPos) override;
+    QRect mouseMove(const QString &brush, QImage *image, const QPointF &newPos) override;
 
-    QRect mouseRelease(const QString &brush, QImage *image, const QPoint &pos) override;
+    QRect mouseRelease(const QString &brush, QImage *image, const QPointF &pos) override;
 
     QRect drawInternal(QPaintDevice *path) override;
 
 private:
-    QPoint mStart,mEnd;
+    QPointF mStart,mEnd;
     QPen pen;
 
 };

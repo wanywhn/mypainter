@@ -12,11 +12,11 @@ public:
     virtual ~BrushInterface() {}
 
     virtual QRect mousePress(const QString &brush, QImage *image,
-                             const QPoint &pos) = 0;
+                             const QPointF &pos) = 0;
     virtual QRect mouseMove(const QString &brush, QImage *image,
-                            const QPoint &newPos) = 0;
+                            const QPointF &newPos) = 0;
     virtual QRect mouseRelease(const QString &brush, QImage *image,
-                               const QPoint &pos) = 0;
+                               const QPointF &pos) = 0;
     virtual QRect drawInternal(QPaintDevice *path)=0;
     void setColor(QColor color){this->color= color;}
     void setWidget(int wid){this->width=wid;}

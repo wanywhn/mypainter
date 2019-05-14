@@ -5,19 +5,19 @@
 #include <QtGui/QPainter>
 #include "Eraser.h"
 
-QRect Eraser::mousePress(const QString &brush, QImage *image, const QPoint &pos) {
+QRect Eraser::mousePress(const QString &brush, QImage *image, const QPointF &pos) {
     mStart=mEnd=pos;
     return QRect();
 }
 
-QRect Eraser::mouseMove(const QString &brush, QImage *image, const QPoint &newPos) {
+QRect Eraser::mouseMove(const QString &brush, QImage *image, const QPointF &newPos) {
     mEnd=newPos;
     auto rect=drawInternal(image);
     mStart=mEnd;
     return rect;
 }
 
-QRect Eraser::mouseRelease(const QString &brush, QImage *image, const QPoint &pos) {
+QRect Eraser::mouseRelease(const QString &brush, QImage *image, const QPointF &pos) {
     mEnd=pos;
     auto rect=drawInternal(image);
     return rect;

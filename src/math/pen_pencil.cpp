@@ -13,8 +13,8 @@ PencilStyle::~PencilStyle() {
 }
 
 
-void PencilStyle::insert_first(int x, int y) {
-    spoint point = {(float) x, (float) y};
+void PencilStyle::insert_first(float x, float y) {
+    spoint point = {x, y};
     if (m_cur_path)
         z_drop_fpoint_array(m_cur_path);
 
@@ -23,7 +23,7 @@ void PencilStyle::insert_first(int x, int y) {
     z_insert_point(m_cur_path, point);
 }
 
-void PencilStyle::insert(int x, int y) {
+void PencilStyle::insert(float x, float y) {
     spoint point = {(float) x, (float) y};
     if (!m_cur_path)
         m_cur_path = z_fpoint_arraylist_append_new(m_arr_list, m_w_max, m_w_min);
@@ -31,10 +31,10 @@ void PencilStyle::insert(int x, int y) {
     z_insert_point(m_cur_path, point);
 }
 
-void PencilStyle::insert_last(int x, int y) {
+void PencilStyle::insert_last(float x, float y) {
     if (!m_cur_path)
         return;
-    spoint point = {(float) x, (float) y};
+    spoint point = {x,  y};
     z_insert_last_point(m_cur_path, point);
 
     z_drop_fpoint_array(m_cur_path);
@@ -121,7 +121,7 @@ QRect PencilStyle::drawInternal(QPaintDevice *device) {
 
 
 
-QRect PencilStyle::mousePress(const QString &brush, QImage *image, const QPoint &pos) {
+QRect PencilStyle::mousePress(const QString &brush, QImage *image, const QPointF &pos) {
     //TODO set line width
     this->m_w_min=this->width*0.3;
     this->m_w_max=this->width*1.5;
@@ -129,12 +129,12 @@ QRect PencilStyle::mousePress(const QString &brush, QImage *image, const QPoint 
     return drawInternal(image);
 }
 
-QRect PencilStyle::mouseMove(const QString &brush, QImage *image, const QPoint &newPos) {
+QRect PencilStyle::mouseMove(const QString &brush, QImage *image, const QPointF &newPos) {
     this->insert(newPos.x(), newPos.y());
     return drawInternal(image);
 }
 
-QRect PencilStyle::mouseRelease(const QString &brush, QImage *image, const QPoint &pos) {
+QRect PencilStyle::mouseRelease(const QString &brush, QImage *image, const QPointF &pos) {
     this->insert_last(pos.x(), pos.y());
     return drawInternal(image);
 }

@@ -20,7 +20,7 @@ void PaintWidget::mousePressEvent(QMouseEvent *event) {
   if (event->button() == Qt::LeftButton) {
     if (brushInterface) {
       brushInterface->makeUndoCommand(*this);
-      auto rect=brushInterface->mousePress(brushName,image, event->pos());
+      auto rect=brushInterface->mousePress(brushName,image, event->localPos());
       this->update(rect);
     }
   }
@@ -30,9 +30,7 @@ void PaintWidget::mouseReleaseEvent(QMouseEvent *event) {
 
   if (event->button() == Qt::LeftButton) {
     if (brushInterface) {
-//      QPainter painter(image);
-//      setupPainter(painter);
-      auto rect=brushInterface->mouseRelease(brushName,image, event->pos());
+      auto rect=brushInterface->mouseRelease(brushName,image, event->localPos());
       this->update(rect);
     }
   }
@@ -42,7 +40,7 @@ void PaintWidget::mouseMoveEvent(QMouseEvent *event) {
 
   if ((event->buttons() & Qt::LeftButton)) {
     if (brushInterface) {
-      auto rect=brushInterface->mouseMove(brushName,image, event->pos());
+      auto rect=brushInterface->mouseMove(brushName,image, event->localPos());
       update(rect);
     }
   }

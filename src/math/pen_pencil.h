@@ -14,9 +14,9 @@ public:
 	~PencilStyle() override;
 
 private:
-	void insert_first(int x, int y);
-	void insert(int x, int y);
-	void insert_last(int x, int y);
+	void insert_first(float x, float y);
+	void insert(float x, float y);
+	void insert_last(float x, float y);
 
 
 	spoint get_last_inserted() {
@@ -30,11 +30,11 @@ private:
 public:
 
 
-	QRect mousePress(const QString &brush, QImage *image, const QPoint &pos) override;
+	QRect mousePress(const QString &brush, QImage *image, const QPointF &pos) override;
 
-	QRect mouseMove(const QString &brush, QImage *image, const QPoint &newPos) override;
+	QRect mouseMove(const QString &brush, QImage *image, const QPointF &newPos) override;
 
-	QRect mouseRelease(const QString &brush, QImage *image, const QPoint &pos) override;
+	QRect mouseRelease(const QString &brush, QImage *image, const QPointF &pos) override;
 
     QRect drawInternal(QPaintDevice *device) override;
 
