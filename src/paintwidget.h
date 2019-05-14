@@ -19,7 +19,7 @@ public:
 signals:
 
 public slots:
-    void setBrushColor(const QColor &color);
+    void setBrushColor(QColor &color);
     void setBrushAlpha(int alpha);
     void setBrushWidth(int width);
     void setBrush(BrushInterface *i,const QString &name);
@@ -37,8 +37,8 @@ protected:
     // QPaintDevice interface
 public:
     int brushWidth();
-
     const QColor &brushColor();
+    float brushAlpha();
 
 
     void pushUndoStack(UndoCommand *comm);
@@ -53,6 +53,7 @@ private:
     BrushInterface *brushInterface{nullptr};
     QString brushName;
     QImage *image;
+    int alpha{255};
 
     QUndoStack *undoStack;
 

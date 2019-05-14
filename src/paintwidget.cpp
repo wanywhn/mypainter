@@ -72,11 +72,17 @@ void PaintWidget::pushUndoStack(UndoCommand *comm) {
   if (comm)
     this->undoStack->push(comm);
 }
-void PaintWidget::setBrushColor(const QColor &color) {
+void PaintWidget::setBrushColor(QColor &color) {
+  color.setAlpha(alpha);
   brushInterface->setColor(color);
 }
-void PaintWidget::setBrushAlpha(int alpha) {brushInterface->setAlpha(alpha);}
+void PaintWidget::setBrushAlpha(int alpha) {
+  this->alpha = alpha;
+  auto c=brushInterface->getColor();
+  c.setAlpha(alpha);
+  brushInterface->setColor(c);
 
+}
 void PaintWidget::setBrushWidth(int width) {
   brushInterface->setWidget(width);
 }
@@ -107,4 +113,8 @@ void PaintWidget::saveFile() {
     auto filepath =
             QFileDialog::getSaveFileUrl(this, tr("Save Path"), QDir::homePath());
   image->save(filepath.toLocalFile(), "PNG");
+}
+
+float PaintWidget::brushAlpha() {
+    return alpha;
 }

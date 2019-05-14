@@ -22,6 +22,7 @@ MainWindow::MainWindow()
     mUndoGroup=new QUndoGroup(this);
     mUndoGroup->addStack(paintWidget->getUndoStack());
     mUndoGroup->setActiveStack(paintWidget->getUndoStack());
+
     init_ui();
     init_conn();
     this->setCentralWidget(paintWidget);
@@ -36,7 +37,7 @@ MainWindow::MainWindow()
 
 void MainWindow::brushColor()
 {
-    const QColor newColor = QColorDialog::getColor(paintWidget->brushColor());
+    QColor newColor = QColorDialog::getColor(paintWidget->brushColor());
     if (newColor.isValid())
         paintWidget->setBrushColor(newColor);
 }
@@ -65,6 +66,10 @@ void MainWindow::createActions()
     brushWidthAct = new QAction(tr("&Brush Width..."), this);
     connect(brushWidthAct, SIGNAL(triggered()), this, SLOT(brushWidth()));
 
+    actAlpha=new QAction (tr("set Alpha"),this);
+    connect(actAlpha,&QAction::triggered,this,&MainWindow::brushAlpha);
+
+
     brushActionGroup = new QActionGroup(this);
 
     actPen=new QAction(tr("Pen"),this);
@@ -72,7 +77,6 @@ void MainWindow::createActions()
 
     actEarser=new QAction(tr("E"),this);
     brushActionGroup->addAction(actEarser);
-
 
 
     actRedo=mUndoGroup->createRedoAction(this,tr("Redo"));
@@ -93,6 +97,7 @@ void MainWindow::createMenus()
     brushMenu = menuBar()->addMenu(tr("&Brush"));
     brushMenu->addAction(brushColorAct);
     brushMenu->addAction(brushWidthAct);
+    brushMenu->addAction(actAlpha);
     brushMenu->addSeparator();
     brushMenu->addAction(actPen);
     brushMenu->addAction(actEarser);
@@ -120,4 +125,14 @@ void MainWindow::init_conn()
         this->paintWidget->setBrush(new Eraser(this),"E");
 
     });
+}
+
+void MainWindow::brushAlpha() {
+    float alpha=paintWidget->brushAlpha();
+    bool ok;
+    const int newAlpha=QInputDialog::getInt(this,tr("Alpha"),tr("Select Alpha"),alpha,1,255,1,&ok);
+    if(ok){
+        paintWidget->setBrushAlpha(newAlpha);
+    }
+
 }

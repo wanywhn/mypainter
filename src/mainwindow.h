@@ -26,6 +26,7 @@ public:
 private slots:
     void brushColor();
     void brushWidth();
+    void brushAlpha();
 
 private:
     void createActions();
@@ -43,6 +44,7 @@ private:
     QAction *exitAct;
     QAction *brushWidthAct;
     QAction *brushColorAct;
+    QAction *actAlpha;
     QUndoGroup *mUndoGroup;
     QAction *actUndo;
     QAction *actRedo;

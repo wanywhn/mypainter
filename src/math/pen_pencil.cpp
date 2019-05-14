@@ -52,6 +52,7 @@ QRect PencilStyle::drawInternal(QPaintDevice *device) {
     painter.setRenderHint(QPainter::RenderHint::HighQualityAntialiasing,true);
     auto pen=painter.pen();
     pen.setCapStyle(Qt::PenCapStyle::RoundCap);
+    pen.setColor(this->color);
     painter.setPen(pen);
 
     QRegion updateed{0, 0, 0, 0};
