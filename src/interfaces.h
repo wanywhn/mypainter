@@ -39,7 +39,7 @@ protected:
     QColor color;
 
 protected:
-    int width{5};
+    int width{10};
     int alpha;
 
 

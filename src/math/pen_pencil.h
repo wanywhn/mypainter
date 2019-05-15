@@ -29,6 +29,7 @@ private:
     BezierBase *base;
 
 
+    QRectF getRectfFromPoints(QPointF f, QPointF t);
 };
 
 #endif //PEN_PELCIL_H

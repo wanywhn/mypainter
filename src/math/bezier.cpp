@@ -273,11 +273,11 @@ float BezierBase::z_insert_point(wpoints_array *arr, spoint new_point) {
 //    printf("cur_ms - last_ms = %f\n", cur_ms - last_ms);
 //TODO 启动伐值,控制连贯性
     float distance = z_distance(new_point, last_point);
-    if ((cur_ms - last_ms) < 1 || distance < 2) {
+    if ((cur_ms - last_ms) < 0.3 || distance < 2) {
         return 0;
     }
 
-    float step = arr->len > 4 ? 0.4f : 0.8f;
+    float step = arr->len > 20 ? 0.05f : 0.2f;
     tpoint bt = {{last_point.x, last_point.y}, last_ms};
     tpoint et = {new_point, cur_ms};
     float w = (z_linewidth(bt, et, last_width, step) + last_width) / 2;
@@ -287,8 +287,8 @@ float BezierBase::z_insert_point(wpoints_array *arr, spoint new_point) {
 
 
     //TODO k=2
-    float k1=2.1;
-    ///这一点为第二点时。直接按比例生成一个中间点。k>1有回峰效果
+    float k1=0.5;
+    ///这一点为第二点时。直接按比例生成一个中间点。
     if (1 == len) {
         wfpoint p = {getPercentPoint(bt.p,et.p,k1), w};
         z_fpoint_differential_add(points, p);
@@ -341,13 +341,6 @@ wpoints_array *BezierBase::z_new_fpoint_array(int initsize) {
     a->ref = 1;
     a->len = 0;
 
-//    if (maxwidth < 0 || minwidth < 0 || maxwidth < minwidth) {
-//        maxwidth = defualt_max_width;
-//        minwidth = default_min_width;
-//    }
-
-//    a->maxwidth = maxwidth;
-//    a->minwidth = minwidth;
 
     a->cap = initsize;
     return a;
@@ -455,8 +448,9 @@ void BezierBase::z_square_bezier(wpoints_array *a, wfpoint b, spoint c, wfpoint 
 void BezierBase::setWidth(float width) {
 
     m_width=width;
-    m_w_max = width * 1.4;
-    m_w_min = width * 0.3;
+    m_w_max = width * 5;
+    m_w_min = width * 0.1;
+    m_w_min=m_w_min<1?1.1:m_w_min;
 }
 
 spoint BezierBase::getPercentPoint(spoint p1, spoint p2, float percent) {
@@ -486,7 +480,7 @@ float BezierBase::z_linewidth(tpoint b, tpoint e, float bw, float step) {
         float s = d / (e.t - b.t);
         s = s > max_speed ? max_speed : s;
         float w = ((max_speed - s) / max_speed)*m_width;
-        float max_dif = d * step*m_width;
+        float max_dif = d* step*m_width;
         if (w < m_w_min) w = m_w_min;
         if (fabs(w - bw) > max_dif) {
             if (w > bw)
