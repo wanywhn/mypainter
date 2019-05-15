@@ -100,6 +100,7 @@ protected:
     virtual void z_fpoint_differential_add(wpoints_array *a, wfpoint p);
 
 private:
+    spoint getPercentPoint(spoint p1, spoint p2, float percent);
 
     void z_square_bezier(wpoints_array *a, wfpoint b, spoint c, wfpoint e);
 
@@ -139,6 +140,7 @@ private:
 
     wpoint_arraylist *z_keep_fpoint_arraylist(wpoint_arraylist *l);
 
+    float z_linewidth(tpoint b, tpoint e, float bw, float step);
     spoint get_last_inserted() {
         spoint p = {0, 0};
         if (m_cur_path) {
@@ -158,7 +160,7 @@ private:
      * 存放一次连笔的路径
      */
     wpoints_array *m_cur_path = nullptr;
-    float m_w_max{7}, m_w_min{4},m_width{6};
+    float m_w_max{8}, m_w_min{3},m_width{6};
 public:
     float getM_w_max() const;
 };
@@ -167,7 +169,6 @@ float z_movespeed(tpoint s, tpoint e);
 
 float z_distance(spoint s, spoint e);
 
-float z_linewidth(tpoint b, tpoint e, float w, float step);
 
 
 typedef struct z_list_node_s z_list_node;

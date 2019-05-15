@@ -45,24 +45,6 @@ float z_distance(spoint b, spoint e) {
 }
 
 
-float z_linewidth(tpoint b, tpoint e, float bwidth, float step) {
-    const float max_speed = 5.0f;
-    float d = z_distance(b.p, e.p);
-    //TODO 获取dpi
-    float s = d / (e.t - b.t);
-    s = s > max_speed ? max_speed : s;
-    float w = (max_speed - s) / max_speed;
-    float max_dif = d * step;
-    if (w < 0.1f) w = 0.1f;
-    if (fabs(w - bwidth) > max_dif) {
-        if (w > bwidth)
-            w = bwidth + max_dif;
-        else
-            w = bwidth - max_dif;
-    }
-    printf("d:%.4f, time_diff:%f, speed:%.4f, width:%.4f\n", d, e.t - b.t, s, w);
-    return w;
-}
 
 
 z_list *z_list_new(z_list_node_alloc_fun allocfun, z_list_node_drop_fun dropfun) {
@@ -295,7 +277,7 @@ float BezierBase::z_insert_point(wpoints_array *arr, spoint new_point) {
         return 0;
     }
 
-    float step = arr->len > 4 ? 0.05f : 0.2f;
+    float step = arr->len > 4 ? 0.4f : 0.8f;
     tpoint bt = {{last_point.x, last_point.y}, last_ms};
     tpoint et = {new_point, cur_ms};
     float w = (z_linewidth(bt, et, last_width, step) + last_width) / 2;
@@ -305,17 +287,19 @@ float BezierBase::z_insert_point(wpoints_array *arr, spoint new_point) {
 
 
     //TODO k=2
-    int k=2;
-    ///这一点为第二点时。直接按比例生成一个中间点。
+    float k1=2.1;
+    ///这一点为第二点时。直接按比例生成一个中间点。k>1有回峰效果
     if (1 == len) {
-        wfpoint p = {{(bt.p.x + et.p.x + 1) / k, (bt.p.y + et.p.y + 1) / k}, w};
+        wfpoint p = {getPercentPoint(bt.p,et.p,k1), w};
         z_fpoint_differential_add(points, p);
         w = p.w;
     } else {
         ///
+        float k2=0.5;
         wfpoint bw = generated_lastpoint;
         spoint c = {last_point.x, last_point.y};
-        wfpoint ew = {{(last_point.x + new_point.x) / k, (last_point.y + new_point.y) / k}, w};
+//        wfpoint ew = {{(last_point.x + new_point.x) * k2, (last_point.y + new_point.y) * k2}, w};
+        wfpoint ew = {getPercentPoint(last_point,new_point,k2), w};
         z_square_bezier(points, bw, c, ew);
     }
 
@@ -471,8 +455,47 @@ void BezierBase::z_square_bezier(wpoints_array *a, wfpoint b, spoint c, wfpoint 
 void BezierBase::setWidth(float width) {
 
     m_width=width;
-    m_w_max = width * 1.1;
-    m_w_min = width * 0.7;
+    m_w_max = width * 1.4;
+    m_w_min = width * 0.3;
+}
+
+spoint BezierBase::getPercentPoint(spoint p1, spoint p2, float percent) {
+    spoint tmp;
+    if(p1.x<p2.x){
+        tmp.x=p1.x;
+        tmp.x+=(p2.x-p1.x)*percent;
+    }else{
+        tmp.x=p2.x;
+        tmp.x+=(p1.x-p2.x)*(1-percent);
+    }
+    if(p1.y<p2.y){
+        tmp.y=p1.y;
+        tmp.y+=(p2.y-p1.y)*percent;
+    }else{
+        tmp.y=p2.y;
+        tmp.y+=(p1.y-p2.y)*(1-percent);
+    }
+    return tmp;
+}
+
+float BezierBase::z_linewidth(tpoint b, tpoint e, float bw, float step) {
+
+        const float max_speed = 10.0f;
+        float d = z_distance(b.p, e.p);
+        //TODO 获取dpi
+        float s = d / (e.t - b.t);
+        s = s > max_speed ? max_speed : s;
+        float w = ((max_speed - s) / max_speed)*m_width;
+        float max_dif = d * step*m_width;
+        if (w < m_w_min) w = m_w_min;
+        if (fabs(w - bw) > max_dif) {
+            if (w > bw)
+                w = bw + max_dif;
+            else
+                w = bw - max_dif;
+        }
+        printf("d:%.4f, time_diff:%f, speed:%.4f, width:%.4f\n", d, e.t - b.t, s,w);
+        return w;
 }
 
 
